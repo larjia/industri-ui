@@ -49,8 +49,8 @@ router.beforeEach((to, from, next) => {
       // 在免登录白名单中,直接进入
       next()
     } else {
-      next()
-      // next(`/login?redirect=${to.path}`)
+      // next()
+      next(`/login?redirect=${to.path}`)
       NProgress.done()
     }
   }
