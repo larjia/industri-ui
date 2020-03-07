@@ -43,8 +43,8 @@
             type="primary"
             style="width:100%;"
             @click.native.prevent="handleLogin">
-            <span v-if="!loading">登录</span>
-            <span v-else>登录中...</span>
+            <span v-if="!loading">登 录</span>
+            <span v-else>登 录 中...</span>
           </el-button>
         </el-form-item>
       </el-form>
