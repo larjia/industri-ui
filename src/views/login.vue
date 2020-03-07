@@ -5,7 +5,7 @@
 
         <el-form-item prop="username">
           <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
-            <svg-icon slot="prefix" icon-class="user" class="el-input_icon input-icon" />
+            <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
           </el-input>
         </el-form-item>
 
@@ -16,7 +16,7 @@
             auto-complete="off"
             placeholder="密码"
             @keyup.enter.native="handleLogin">
-            <svg-icon slot="prefix" icon-class="password" class="el-input_icon input-icon" />
+            <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
           </el-input>
         </el-form-item>
 
@@ -27,7 +27,7 @@
             placeholder="验证码"
             style="width: 63%"
             @keyup.enter.native="handleLogin">
-            <svg-icon slot="prefix" icon-class="validCode" class="el-input_icon input-icon" />
+            <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
           </el-input>
           <div class="login-code">
             <img :src="codeUrl" @click="getCode" />
