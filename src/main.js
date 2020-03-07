@@ -14,6 +14,7 @@ import router from './router'
 import store from './store'
 // import permission from './directive/permission'
 
+import '@/assets/icons' // icon
 import './permission' // permission control
 
 // 全局方法挂载
