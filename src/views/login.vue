@@ -135,7 +135,7 @@ export default {
           this.$store
             .dispatch('Login', this.loginForm)
             .then(() => {
-              console.log("login successfully here")
+              console.log('login successfully here')
               this.$router.push({ path: this.redirect || '/' })
             })
             .catch(() => {
