@@ -20,6 +20,11 @@ const routes = [
   //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   // }
   {
+    path: '/login',
+    component: () => import('@/views/login'),
+    hiddent: true
+  },
+  {
     path: '',
     component: Layout,
     redirect: 'index',
