@@ -141,6 +141,7 @@ export default {
             .catch(() => {
               console.log('login error happened')
               this.loading = false
+              // 登录失败,刷新验证码,重新获取验证码
               this.getCode()
             })
         }
