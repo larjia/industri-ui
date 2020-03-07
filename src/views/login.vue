@@ -135,9 +135,11 @@ export default {
           this.$store
             .dispatch('Login', this.loginForm)
             .then(() => {
-              this.router.push({ path: this.redirect || '/' })
+              console.log("login successfully here")
+              this.$router.push({ path: this.redirect || '/' })
             })
             .catch(() => {
+              console.log('login error happened')
               this.loading = false
               this.getCode()
             })
