@@ -5,7 +5,8 @@ import Layout from '@/layout'
 
 Vue.use(VueRouter)
 
-const routes = [
+// 公共路由
+export const constantRoutes = [
   // {
   //   path: '/',
   //   name: 'Home',
@@ -42,7 +43,8 @@ const routes = [
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes
+  scrollBehavior: () => ({ y: 0 }),
+  routes: constantRoutes
 })
 
 export default router

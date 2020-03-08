@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { constantRoutes } from '@/router'
 import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index'
@@ -19,10 +20,10 @@ const permission = {
       return new Promise(resolve => {
         // 向后端请求路由数据
         getRouters().then(res => {
-          const accessRoutes = filterAsyncRouter(res.data)
-          accessRoutes.push({ path: '*', redirect: '/404', hidden: true })
-          commit('SET_ROUTES', accessRoutes)
-          resolve(accessRoutes)
+          const accessedRoutes = filterAsyncRouter(res.data)
+          accessedRoutes.push({ path: '*', redirect: '/404', hidden: true })
+          commit('SET_ROUTES', accessedRoutes)
+          resolve(accessedRoutes)
         })
       })
     }
@@ -47,7 +48,7 @@ function filterAsyncRouter (asyncRouterMap) {
   })
 }
 
-export const laodView = (view) => { // 路由懒加载
+export const loadView = (view) => { // 路由懒加载
   return () => import(`@/views/${view}`)
 }
 
