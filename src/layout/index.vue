@@ -1,5 +1,5 @@
 <template>
-  <div class="app-wrapper">
+  <div :class="classObj" class="app-wrapper">
     <!-- sidebar here -->
     <sidebar class="sidebar-container"/>
     <div :class="{hasTagsView:needTagsView}" class="main-container">

@@ -1,12 +1,54 @@
 <template>
   <div class="navbar">
-    Navbar
+    <
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import Breadcrumb from '@/components/Breadcrubm'
+import Hamburger from '@/components/Hamburger'
+
 export default {
-  name: 'Navbar'
+  name: 'Navbar',
+  components: {
+    Breadcrumb,
+    Hamburger
+  },
+  computed: {
+    ...mapGetters([
+      'sidebar',
+      'avatar',
+      'device'
+    ]),
+    setting: {
+      get () {
+        return this.$store.state.settings.showSettings
+      },
+      set (val) {
+        this.$store.dispatch('settings/changeSetting', {
+          key: 'showSettings',
+          value: val
+        })
+      }
+    }
+  },
+  methods: {
+    toggleSideBar () {
+      this.$store.dispatch('app/toggleSideBar')
+    },
+    async logout() {
+      this.$confirm('', '', {
+        $confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$store.dispatch('LogOut').then(() => {
+          location.reload()
+        })
+      })
+    }
+  }
 }
 </script>
 
