@@ -26,7 +26,7 @@ export default {
   },
   data () {
     return {
-      title: '报表中心',
+      title: 'SWL报表中心',
       logo: logoImg
     }
   }
