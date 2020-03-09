@@ -1,16 +1,22 @@
 <template>
-  <div :class="classObj" class="app-wrapper">
+  <div
+    :class="classObj"
+    class="app-wrapper"
+  >
     <!-- sidebar here -->
-    <sidebar class="sidebar-container"/>
-    <div :class="{hasTagsView:needTagsView}" class="main-container">
+    <sidebar class="sidebar-container" />
+    <div
+      :class="{hasTagsView:needTagsView}"
+      class="main-container"
+    >
       <div :class="{'fixed-header':fixedHeader}">
         <!-- navbar here -->
         <navbar />
         <!-- tags-view here -->
-        <tags-view v-if="needTagsView"/>
+        <tags-view v-if="needTagsView" />
       </div>
       <!-- main app here -->
-      <app-main/>
+      <app-main />
     </div>
   </div>
 </template>

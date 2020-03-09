@@ -1,5 +1,8 @@
 <template>
-  <div id="tags-view-container" class="tags-view-container">
+  <div
+    id="tags-view-container"
+    class="tags-view-container"
+  >
     <!-- scroll-pane here -->
     Tags View Here
   </div>
