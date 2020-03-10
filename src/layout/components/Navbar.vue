@@ -9,7 +9,7 @@
 
     <breadcrumb 
       id="breadcrumb-container"
-      class="breancrumb-conatiner"
+      class="breadcrumb-conatiner"
     />
 
     <div class="right-menu">
@@ -19,26 +19,18 @@
         class="avatar-container right-menu-item hover-effect" 
         trigger="click"
       >
-        <div 
-          class="avatar-wrapper"
-        >
-          <img 
-            :src="avatar" 
-            class="user-avatar"
-          >
+        <div class="avatar-wrapper">
+          <img :src="avatar" class="user-avatar">
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
-          <router-link to="/user/profile">
+          <!-- <router-link to="/user/profile">
             <el-dropdown-item>个人中心</el-dropdown-item>
-          </router-link>
-          <!-- <el-dropdown-item>
-            <span @click="setting = true">布局设置</span>
-          </el-dropdown-item> -->
+          </router-link> -->
+          <el-dropdown-item divided>
+            <span @click="logout">退出登录</span>
+          </el-dropdown-item>
         </el-dropdown-menu>
-        <el-dropdown-item divided>
-          <span @click="logout">退出登录</span>
-        </el-dropdown-item>
       </el-dropdown>
     </div>
   </div>
