@@ -1,5 +1,5 @@
 <template>
-  <h1>Index</h1>
+  <h3>欢迎来到SWL报表中心</h3>
 </template>
 
 <script>

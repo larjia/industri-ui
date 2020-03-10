@@ -68,7 +68,7 @@ export default {
   position: relative;
   height: 100%;
   width: 100%;
-  background-color: azure;
+  // background-color: azure;
 
   &.mobile.openSiderbar {
     position: fixed;

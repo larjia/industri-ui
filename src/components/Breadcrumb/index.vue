@@ -22,7 +22,7 @@ export default {
     }
   },
   watch: {
-    $route(route) {
+    $route (route) {
       // if you go to the the redirect page, do not update the breadcrumbs
       if (route.path.startsWith('/redirect/')) {
         return
@@ -42,6 +42,8 @@ export default {
       if (!this.isDashboard(first)) {
         matched = [{ path: '/index', meta: { title: '首页' } }].concat(matched)
       }
+
+      this.levelList = matched.filter(item => item.meta && item.meta.title && item.meata.breadcrumb !== false)
     },
     isDashboard (route) {
       const name = route && route.name
