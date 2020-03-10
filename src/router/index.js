@@ -39,6 +39,17 @@ export const constantRoutes = [
   //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   // }
   {
+    path: '/redirect',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/redirect/:path',
+        component: () => import('@/views/redirect')
+      }
+    ]
+  },
+  {
     path: '/login',
     component: () => import('@/views/login'),
     hiddent: true
