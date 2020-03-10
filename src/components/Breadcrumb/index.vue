@@ -23,7 +23,11 @@ export default {
   },
   watch: {
     $route(route) {
-
+      // if you go to the the redirect page, do not update the breadcrumbs
+      if (route.path.startsWith('/redirect/')) {
+        return
+      }
+      this.getBreadcrumb()
     }
   },
   created () {
@@ -33,7 +37,7 @@ export default {
     getBreadcrumb () {
       // only show routes with meta.title
       let matched = this.$route.matched.filter(item => item.meta && item.meta.title)
-      const first = match[0]
+      const first = matched[0]
 
       if (!this.isDashboard(first)) {
         matched = [{ path: '/index', meta: { title: '首页' } }].concat(matched)
