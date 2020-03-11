@@ -63,7 +63,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/index'),
         name: '首页',
-        meta: { title: '首页', icon: 'dashboard', noCache: true, affix: true }
+        meta: { title: '首页', icon: 'dashboard', noCache: true, affix: true } // affix: 若为true则在tagsView中始终显示
       }
     ]
   }
