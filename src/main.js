@@ -16,7 +16,29 @@ import store from './store'
 import '@/assets/icons' // icon
 import './permission' // permission control
 
+import { getDicts } from '@/api/system/dict/data'
+import { parseTime, resetForm, addDateRange, selectDictLabel, download, handleTree } from '@/utils/dc'
+
 // 全局方法挂载
+Vue.prototype.getDicts = getDicts
+Vue.prototype.parseTime = parseTime
+Vue.prototype.resetForm = resetForm
+Vue.prototype.addDateRange = addDateRange
+Vue.prototype.selectDictLabel = selectDictLabel
+Vue.prototype.download = download
+Vue.prototype.handleTree = handleTree
+
+Vue.prototype.msgSuccess = function (msg) {
+  this.$message({ showClose: true, message: msg, type: 'success' })
+}
+
+Vue.prototype.msgError = function (msg) {
+  this.$message({ showClose: true, message: msg, type: 'error' })
+}
+
+Vue.prototype.msgInfo = function (msg) {
+  this.$message.info(msg)
+}
 
 // 全局组件挂载
 // Vue.use(permission)
