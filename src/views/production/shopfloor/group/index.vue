@@ -10,7 +10,7 @@
         />
       </el-form-item>
       <el-form-item label="所属车间">
-        <treeselect v-model='form.deptId' :options="deptOptions" :normalizer='normalizer' placeholder='选择所属车间' style="width:300px;"/>
+        <treeselect v-model='queryParams.deptId' :options="deptOptions" :normalizer='normalizer' placeholder='选择所属车间' style="width:300px;"/>
       </el-form-item>
       <el-form-item>
         <el-button
@@ -72,16 +72,18 @@
             <treeselect v-model="form.deptId" :options="deptOptions" :normalizer='normalizer' placeholder="选择所属车间" />
           </el-form-item>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="24">
           <el-form-item label="班组名称" prop="groupName">
             <el-input v-model="form.groupName" placeholder="请输入班组名称" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
+        </el-col>
+        <!-- <el-col :span="12">
           <el-form-item label="显示排序" prop="orderNum">
             <el-input-number v-model="form.orderNum" controls-position="right" :min="0" />
           </el-form-item>
-        </el-col>
+        </el-col> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -92,7 +94,7 @@
 </template>
 
 <script>
-import { listGroup, getGroup, addGroup, updateGroup, delGroup } from '@/api/production/shopfloorgroup'
+import { listGroup, getGroup, addGroup, updateGroup, delGroup } from '@/api/production/shopfloor/group/group'
 import { listDept } from '@/api/system/dept'
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
@@ -164,8 +166,8 @@ export default {
     reset () {
       this.form = {
         deptId: undefined,
-        groupName: undefined,
-        orderNum: undefined
+        groupName: undefined
+        // orderNum: undefined
       }
       this.resetForm('form')
     },
@@ -236,8 +238,4 @@ export default {
 </script>
 
 <style scoped>
-treeselect {
-  width: 300px;
-  height: 36px;
-}
 </style>

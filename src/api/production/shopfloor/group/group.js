@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询班组列表
 export function listGroup (query) {
   return request({
-    url: '/production/shopfloorgroup/list',
+    url: '/production/shopfloor/group/list',
     method: 'get',
     params: query
   })
@@ -12,7 +12,7 @@ export function listGroup (query) {
 // 查询班组详细
 export function getGroup (groupId) {
   return request({
-    url: '/production/shopfloorgroup/' + groupId,
+    url: '/production/shopfloor/group/' + groupId,
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export function getGroup (groupId) {
 // 新增班组
 export function addGroup (data) {
   return request({
-    url: '/production/shopfloorgroup',
+    url: '/production/shopfloor/group',
     method: 'post',
     data: data
   })
@@ -29,7 +29,7 @@ export function addGroup (data) {
 // 修改部门
 export function updateGroup (data) {
   return request({
-    url: '/production/shopfloorgroup',
+    url: '/production/shopfloor/group',
     method: 'put',
     data: data
   })
@@ -38,7 +38,7 @@ export function updateGroup (data) {
 // 删除部门
 export function delGroup (groupId) {
   return request({
-    url: '/production/shopfloorgroup/' + groupId,
+    url: '/production/shopfloor/group/' + groupId,
     method: 'delete'
   })
 }
