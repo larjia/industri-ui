@@ -68,12 +68,12 @@
     <el-dialog :title="title" :visible.sync="open" width="600px">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-col :span="24">
-          <el-form-item label="所属车间" prop="deptId">
+          <el-form-item label="车间" prop="deptId">
             <treeselect v-model="form.deptId" :options="deptOptions" :normalizer='normalizer' placeholder="选择所属车间" />
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-form-item label="班组名称" prop="groupName">
+          <el-form-item label="班组" prop="groupName">
             <el-input v-model="form.groupName" placeholder="请输入班组名称" />
           </el-form-item>
         </el-col>
@@ -123,7 +123,7 @@ export default {
       form: {},
       // 表单校验
       rules: {
-
+        // TODO 添加表单验证规则
       }
     }
   },
@@ -154,7 +154,7 @@ export default {
     // 查询部门下拉树结构
     getTreeselect () {
       listDept().then(response => {
-        this.deptOptions = this.handleTree(response.data, "deptId")
+        this.deptOptions = this.handleTree(response.data, 'deptId')
       })
     },
     // 取消按钮
