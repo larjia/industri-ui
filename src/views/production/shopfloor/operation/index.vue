@@ -131,7 +131,7 @@ export default {
     return {
       // 遮罩层
       loading: true,
-      // 表格书数据
+      // 表格数据
       opList: [],
       // 班组选项
       groupOptions: [],
