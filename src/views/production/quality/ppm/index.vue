@@ -44,6 +44,7 @@
       :data='ppmList'
       row-key='ppmId'
       border
+      stripe
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
       <el-table-column prop="prodDate" label="生产日期" width="160" align="center">
@@ -66,17 +67,21 @@
     </el-table>
 
     <!-- 添加或修改报工对话框 -->
-    <el-dialog :title="title" :visible.sync="open" :close-on-click-modal="false" :close-on-press-escape="false" width="900px">
+    <el-dialog :title="title" :visible.sync="open" :close-on-click-modal="false" :close-on-press-escape="false" width="900px" class="dialog">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <!-- 表单行-生产日期 -->
         <el-row>
-          <el-col :span="8">
+          <el-col :span="16">
             <el-form-item label="生产日期" prop="prodDate">
               <el-date-picker
                 v-model="form.prodDate"
                 type="date"
-                placeholder="选择日期"
+                size="small"
               />
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="">
             </el-form-item>
           </el-col>
         </el-row>
@@ -85,14 +90,19 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="物料号" prop="partNumber">
-              <el-select v-model="form.partNumber" placeholder="物料号" clearable size="small">
+              <!-- <el-select v-model="form.partNumber" placeholder="物料号" clearable size="small">
                 <el-option
                   v-for="part in partOptions"
                   :key="part.partId"
                   :label="part.partNumber"
                   :value="part.partNumber"
                 />
-              </el-select>
+              </el-select> -->
+              <el-input
+                v-model="form.partNumber"
+                clearable
+                size="small"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="16">
@@ -100,7 +110,7 @@
               <el-input
                 clearable
                 size="small"
-                disabled
+                readonly
               />
             </el-form-item>
           </el-col>
@@ -121,8 +131,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="班组" prop="prodGroup">
-              <el-select v-model="form.prodGroup" placeholder="班组" clearable size="small">
+            <el-form-item label="班组" prop="prodSFGroup">
+              <el-select v-model="form.prodSFGroup" placeholder="班组" clearable size="small">
                 <el-option
                   v-for="group in groupOptions"
                   :key="group.groupId"
@@ -133,8 +143,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="工序" prop="prodDept">
-              <el-select v-model="form.prodDept" placeholder="工序" clearable size="small">
+            <el-form-item label="工序" prop="prodSFOp">
+              <el-select v-model="form.prodSFOp" placeholder="工序" clearable size="small">
                 <el-option
                   v-for="dept in deptOptions"
                   :key="dept.deptId"
@@ -149,19 +159,6 @@
         <!-- 表单行-班次 操作员 -->
         <el-row>
           <el-col :span="8">
-            <el-form-item label="班次" prop="shift">
-              <el-select v-model="form.shift" placeholder="选择班次" clearable size="small">
-                <el-option
-                  v-for="shift in shiftOptions"
-                  :key="shift.id"
-                  :label="shift.name"
-                  :value="shift.id"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="8">
             <el-form-item label="操作员" prop="operator">
               <el-select v-model="form.operator" placeholder="选择操作员" clearable size="small">
                 <el-option
@@ -171,6 +168,23 @@
                   :value="operator.id"
                 />
               </el-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="8">
+            <el-form-item label="班次" prop="shift">
+              <!-- <el-select v-model="form.shift" placeholder="选择班次" clearable size="small">
+                <el-option
+                  v-for="shift in shiftOptions"
+                  :key="shift.id"
+                  :label="shift.name"
+                  :value="shift.id"
+                />
+              </el-select> -->
+              <template>
+                <el-radio v-model="form.shift" label="0">白班</el-radio>
+                <el-radio v-model="form.shift" label="1">夜班</el-radio>
+              </template>
             </el-form-item>
           </el-col>
         </el-row>
@@ -189,10 +203,10 @@
           <el-col :span="8">
             <el-form-item label="合格数" prop="qtyAccepted">
               <el-input
-                v-model="form.qtyAccepted"
+                v-model='qtyAccepted'
                 clearable
                 size="small"
-                disabled=""
+                readonly
               />
             </el-form-item>
           </el-col>
@@ -212,10 +226,10 @@
           <el-col :span="8">
             <el-form-item label="FTQ" prop="ftq">
               <el-input
-                v-model="form.ftq"
+                v-bind:value='ftq | perDisp(ftq)'
                 clearable
                 size="small"
-                disabled=""
+                readonly
               />
             </el-form-item>
           </el-col>
@@ -235,10 +249,10 @@
           <el-col :span="8">
             <el-form-item label="PPM" prop="ppm">
               <el-input
-                v-model="form.ppm"
+                v-bind:value='ppm'
                 clearable
                 size="small"
-                disabled=""
+                readonly
               />
             </el-form-item>
           </el-col>
@@ -284,6 +298,32 @@ export default {
   created () {
     this.getList()
   },
+  filters: {
+    perDisp (value) {
+      let res = value ? (parseFloat((value * 100).toFixed(2)) + '%') : value
+      return res
+    }
+  },
+  computed: {
+    qtyAccepted () {
+      // get () {
+        return this.form.qtyCompleted - this.form.qtyRejected - this.form.qtyScrapped
+      // }
+    },
+    ftq () {
+      if (this.form.qtyCompleted !== 0) {
+        let res = parseFloat((this.qtyAccepted / this.form.qtyCompleted).toFixed(4))
+        return res
+      }
+      return ''
+    },
+    ppm () {
+      if (this.form.qtyCompleted !== 0) {
+        return Number(1000000 * (this.form.qtyRejected + this.form.qtyScrapped) / this.form.qtyCompleted).toFixed(0)
+      }
+      return ''
+    }
+  },
   methods: {
     // 查询PPM列表
     getList () {
@@ -296,6 +336,12 @@ export default {
     // 表单重置
     reset () {
       this.form = {
+        prodDate: new Date(), // 默认当前日期
+        shift: '0', // 默认白班
+        qtyCompleted: 0,
+        qtyRejected: 0,
+        qtyScrapped: 0,
+        // qtyAccepted: this.qtyAccepted
       };
       this.resetForm('form')
     },
@@ -323,5 +369,29 @@ export default {
 </script>
 
 <style scoped>
+.app-container ::v-deep .el-dialog__body {
+  padding: 20px 25px 0 25px;
+}
 
+.app-container ::v-deep .el-dialog__header {
+  padding: 15px 25px 10px 25px;
+  background-color: #eee;
+}
+
+.app-container ::v-deep .el-dialog__headerbtn {
+  top: 15px;
+}
+
+.app-container ::v-deep .el-dialog__footer {
+  padding-left: 25px;
+  padding-right: 25px;
+}
+
+.el-input-number--small {
+  width: 205px;
+}
+
+.el-date-editor {
+  width: 205px;
+}
 </style>
