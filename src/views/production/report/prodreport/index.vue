@@ -267,7 +267,7 @@
 </template>
 
 <script>
-import { listReportHist } from '@/api/production/report/prodreport'
+import { listReportHist, addReportHist } from '@/api/production/report/prodreport'
 import { listProdDept } from '@/api/system/dept'
 import { listGroup } from '@/api/production/shopfloor/group/group'
 import { listOperation } from '@/api/production/shopfloor/operation/operation'
@@ -307,7 +307,7 @@ export default {
     }
   },
   created () {
-    this.getList()
+    this.getReportHistList()
   },
   filters: {
     perDisp (value) {
@@ -330,14 +330,14 @@ export default {
     },
     ppm () {
       if (this.form.qtyCompleted !== 0) {
-        return Number(1000000 * (this.form.qtyRejected + this.form.qtyScrapped) / this.form.qtyCompleted).toFixed(0)
+        return parseFloat((1000000 * (this.form.qtyRejected + this.form.qtyScrapped) / this.form.qtyCompleted).toFixed(0))
       }
       return ''
     }
   },
   methods: {
-    // 查询PPM列表
-    getList () {
+    // 查询生产报工列表
+    getReportHistList () {
       this.loading = true
       listReportHist(this.queryParams).then(response => {
         this.ppmList = response.rows
@@ -405,29 +405,27 @@ export default {
       this.title = '新增报工记录'
     },
     submitForm () {
-      console.log(this.form)
+      // console.log(this.form)
       this.$refs['form'].validate(valid => {
         if (valid) {
-          if (this.form.ppmId !== undefined) { // 修改
-            // updateOperation(this.form).then(response => {
-            //   if (response.code === 200) {
-            //     this.msgSuccess('修改成功')
-            //     this.open = false
-            //     this.getOpList()
-            //   } else {
-            //     this.msgError(response.msg)
-            //   }
-            // })
+          this.form.prodDept = this.form.prodDept.deptName
+          this.form.prodSFGroup = this.form.prodSFGroup.groupName
+          this.form.prodSFOp = this.form.prodSFOp.operationName
+          this.form.qtyAccepted = this.qtyAccepted
+          this.form.ppm = this.ppm
+          this.form.ftq = this.ftq
+
+          if (this.form.id !== undefined) { // 修改
           } else { // 新增
-            // addOperation(this.form).then(response => {
-            //   if (response.code === 200) {
-            //     this.msgSuccess('新增成功')
-            //     this.open = false
-            //     this.getOpList()
-            //   } else {
-            //     this.msgError(response.msg)
-            //   }
-            // })
+            addReportHist(this.form).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess('新增成功')
+                this.open = false
+                this.getReportHistList()
+              } else {
+                this.msgError(response.msg)
+              }
+            })
           }
         }
       })
