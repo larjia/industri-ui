@@ -10,7 +10,7 @@ export function listReportHist (query) {
 }
 
 // 根据Id查询生产报工信息
-export function getReportHist (id) {
+export function getReportHistById (id) {
   return request({
     url: '/production/report/prodreporthist/' + id,
     method: 'get'
@@ -36,7 +36,7 @@ export function updateReportHist (data) {
 }
 
 // 删除生产报工
-export function deleteReportHist (id) {
+export function deleteReportHistById (id) {
   return request({
     url: '/production/report/prodreporthist/' + id,
     method: 'delete'

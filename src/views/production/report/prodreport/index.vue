@@ -11,14 +11,19 @@
         />
       </el-form-item>
       <el-form-item label="物料号">
-        <el-select v-model="queryParams.partNumber" placeholder="物料号" clearable size="small">
+        <!-- <el-select v-model="queryParams.partNumber" placeholder="物料号" clearable size="small">
           <el-option
             v-for="part in partOptions"
             :key="part.partId"
             :label="part.partNumber"
             :value="part.partNumber"
           />
-        </el-select>
+        </el-select> -->
+        <el-input
+          v-model="queryParams.partNumber"
+          size="small"
+          placeholder="输入物料号"
+        />
       </el-form-item>
       <el-form-item>
         <el-button
@@ -35,18 +40,38 @@
           size="mini"
           @click="handleAdd"
         >新增</el-button>
+        <el-button
+          type="success"
+          icon="el-icon-edit"
+          size="mini"
+          :disabled='single'
+          @click="handleUpdate"
+        >修改</el-button>
+        <el-button
+          type="danger"
+          icon="el-icon-delete"
+          size="mini"
+          :disabled='single'
+        >删除</el-button>
+        <el-button
+          type="warning"
+          icon="el-icon-download"
+          size="mini"
+        >导出</el-button>
       </el-form-item>
     </el-form>
 
     <!-- 数据表格 -->
     <el-table
       v-loading='loading'
-      :data='ppmList'
-      row-key='ppmId'
+      :data='reportHistList'
+      row-key='id'
       border
       stripe
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      @selection-change="handleSelectionChange"
     >
+      <el-table-column type="selection" width="55" align="center" />
       <el-table-column prop="prodDate" label="生产日期" width="110">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.prodDate, '{y}-{m}-{d}') }}</span>
@@ -69,6 +94,15 @@
       <el-table-column prop="ppm" label="PPM" width="80"></el-table-column>
       <el-table-column prop="ftq" label="FTQ" width="80"></el-table-column>
     </el-table>
+
+    <!-- 分页 -->
+    <pagination
+      v-show='total > 0'
+      :total='total'
+      :page.sync='queryParams.pageNum'
+      :limit.sync='queryParams.pageSize'
+      @pagination='getReportHistList'
+    />
 
     <!-- 添加或修改报工对话框 -->
     <el-dialog :title="title" :visible.sync="open" :close-on-click-modal="false" :close-on-press-escape="false" width="900px" class="dialog">
@@ -271,7 +305,7 @@
 </template>
 
 <script>
-import { listReportHist, addReportHist } from '@/api/production/report/prodreport'
+import { listReportHist, getReportHistById, addReportHist, updateReportHist, deleteReportHistById } from '@/api/production/report/prodreport'
 import { listProdDept } from '@/api/system/dept'
 import { listGroup } from '@/api/production/shopfloor/group/group'
 import { listOperation } from '@/api/production/shopfloor/operation/operation'
@@ -282,12 +316,22 @@ export default {
     return {
       // 遮罩层
       loading: false,
+      // 选中数组
+      ids: [],
+      // 非单个禁用
+      single: true,
+      // 非多个禁用
+      multiple: true,
+      // 总条数
+      total: 0,
       // 表格数据
-      ppmList: [],
+      reportHistList: [],
       // 物料数据
-      partOptions: [],
+      // partOptions: [],
       // 查询参数
       queryParams: {
+        pageNum: 1,
+        pageSize: 10,
         prodDate: undefined,
         partNumber: undefined
       },
@@ -347,7 +391,8 @@ export default {
     getReportHistList () {
       this.loading = true
       listReportHist(this.queryParams).then(response => {
-        this.ppmList = response.rows
+        this.reportHistList = response.rows
+        this.total = response.total
         this.loading = false
       })
     },
@@ -398,32 +443,73 @@ export default {
       };
       this.resetForm('form')
     },
+    //
+    handleSelectionChange (selection) {
+      this.ids = selection.map(item => item.id)
+      this.single = selection.length !== 1
+      this.multiple = !selection.length
+    },
     // 搜索按钮操作
     handleQuery () {
+      this.queryParams.pageNum = 1
+      this.getReportHistList()
     },
     // 新增按钮操作
-    handleAdd (row) {
+    handleAdd () {
       this.reset()
       this.getDeptList()
-      if (row != undefined) {
-
-      }
       this.open = true
       this.title = '新增报工记录'
+    },
+    // 修改按钮操作
+    handleUpdate (row) {
+      this.reset()
+      const id = row.id || this.ids
+      getReportHistById(id).then(response => {
+        this.getDeptList()
+        this.form = response.data
+        this.open = true
+        this.title = '修改报工记录'
+      })
     },
     submitForm () {
       // console.log(this.form)
       this.$refs['form'].validate(valid => {
         if (valid) {
-          this.form.prodDept = this.form.prodDept.deptName
-          this.form.prodSFGroup = this.form.prodSFGroup.groupName
-          this.form.prodSFOp = this.form.prodSFOp.operationName
-          this.form.qtyAccepted = this.qtyAccepted
-          this.form.ppm = this.ppm
-          this.form.ftq = this.ftq
-
           if (this.form.id !== undefined) { // 修改
+            console.log(this.form)
+
+            if (this.form.prodDept instanceof Object) {
+              this.form.prodDept = this.form.prodDept.deptName
+            }
+            if (this.form.prodSFGroup instanceof Object) {
+              this.form.prodSFGroup = this.form.prodSFGroup.groupName
+            }
+            if (this.form.prodSFOp instanceof Object) {
+              this.form.prodSFOp = this.form.prodSFOp.operationName
+            }
+            this.form.qtyAccepted = this.qtyAccepted
+            this.form.ppm = this.ppm
+            this.form.ftq = this.ftq
+
+            updateReportHist(this.form).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess('修改成功')
+                this.open = false
+                this.getReportHistList()
+              } else {
+                this.msgError(response.msg)
+              }
+            })
+
           } else { // 新增
+            this.form.prodDept = this.form.prodDept.deptName
+            this.form.prodSFGroup = this.form.prodSFGroup.groupName
+            this.form.prodSFOp = this.form.prodSFOp.operationName
+            this.form.qtyAccepted = this.qtyAccepted
+            this.form.ppm = this.ppm
+            this.form.ftq = this.ftq
+
             addReportHist(this.form).then(response => {
               if (response.code === 200) {
                 this.msgSuccess('新增成功')

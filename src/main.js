@@ -18,6 +18,7 @@ import './permission' // permission control
 
 import { getDicts } from '@/api/system/dict/data'
 import { parseTime, resetForm, addDateRange, selectDictLabel, download, handleTree } from '@/utils/dc'
+import Pagination from '@/components/Pagination'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -41,6 +42,8 @@ Vue.prototype.msgInfo = function (msg) {
 }
 
 // 全局组件挂载
+Vue.component('Pagination', Pagination)
+
 // Vue.use(permission)
 
 Vue.use(Element, {

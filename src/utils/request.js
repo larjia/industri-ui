@@ -28,8 +28,8 @@ service.interceptors.request.use(
 
 // response 拦截器
 service.interceptors.response.use(res => {
-  console.log('res inside response interceptor')
-  console.log(res)
+  // console.log('res inside response interceptor')
+  // console.log(res)
   const code = res.data.code
   if (code === 401) {
     MessageBox.confirm(
@@ -46,7 +46,7 @@ service.interceptors.response.use(res => {
       })
     })
   } else if (code !== 200) {
-    console.log('here: before Notification')
+    // console.log('here: before Notification')
     Notification.error({
       title: res.data.msg
     })
