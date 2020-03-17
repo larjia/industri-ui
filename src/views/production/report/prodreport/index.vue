@@ -47,14 +47,18 @@
       stripe
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
     >
-      <el-table-column prop="prodDate" label="生产日期" width="160" align="center">
+      <el-table-column prop="prodDate" label="生产日期" width="110">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.prodDate) }}</span>
+          <span>{{ parseTime(scope.row.prodDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="partNumber" label="物料号" width="130"></el-table-column>
-      <el-table-column prop="operator" label="操作员" width="80"></el-table-column>
-      <el-table-column prop="shift" label="班次" width="60"></el-table-column>
+      <el-table-column prop="partNumber" label="物料号" width="140"></el-table-column>
+      <el-table-column prop="operator" label="操作员" width="90"></el-table-column>
+      <el-table-column prop="shift" label="班次" width="70">
+        <template slot-scope="scope">
+          <span>{{ scope.row.shift | shiftDisp }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="prodDept" label="车间部门" width="100"></el-table-column>
       <el-table-column prop="prodSFGroup" label="班组" width="110"></el-table-column>
       <el-table-column prop="prodSFOp" label="工序" width="120"></el-table-column>
@@ -313,6 +317,9 @@ export default {
     perDisp (value) {
       let res = value ? (parseFloat((value * 100).toFixed(2)) + '%') : value
       return res
+    },
+    shiftDisp (value) {
+      return value === '0' ? '白班' : '夜班'
     }
   },
   computed: {
