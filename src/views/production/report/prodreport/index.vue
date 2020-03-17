@@ -267,13 +267,13 @@
 </template>
 
 <script>
-import { listPPM } from '@/api/production/quality/ppm/ppm'
+import { listReportHist } from '@/api/production/report/prodreport'
 import { listProdDept } from '@/api/system/dept'
 import { listGroup } from '@/api/production/shopfloor/group/group'
 import { listOperation } from '@/api/production/shopfloor/operation/operation'
 
 export default {
-  name: 'ProdPPM',
+  name: 'ProdReport',
   data () {
     return {
       // 遮罩层
@@ -339,7 +339,7 @@ export default {
     // 查询PPM列表
     getList () {
       this.loading = true
-      listPPM(this.queryParams).then(response => {
+      listReportHist(this.queryParams).then(response => {
         this.ppmList = response.rows
         this.loading = false
       })
