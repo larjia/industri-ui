@@ -154,7 +154,7 @@ export default {
       }
     },
     handleLogin () {
-      console.log('inside handleLogin')
+      // console.log('inside handleLogin')
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
@@ -170,7 +170,7 @@ export default {
           this.$store
             .dispatch('Login', this.loginForm)
             .then(() => {
-              console.log('login successfully here')
+              // console.log('login successfully here')
               this.$router.push({ path: this.redirect || '/' })
             })
             .catch(() => {

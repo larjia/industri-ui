@@ -52,6 +52,7 @@
           icon="el-icon-delete"
           size="mini"
           :disabled='single'
+          @click="handleDelete"
         >删除</el-button>
         <el-button
           type="warning"
@@ -93,6 +94,16 @@
       <el-table-column prop="qtyAccepted" label="合格数" width="80"></el-table-column>
       <el-table-column prop="ppm" label="PPM" width="80"></el-table-column>
       <el-table-column prop="ftq" label="FTQ" width="80"></el-table-column>
+      <!-- <el-table-column v-show="false">
+        <template slot-scope="scope">
+          <el-button 
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            @click='handleDelete(scope.row)'
+          >删除</el-button>
+        </template>
+      </el-table-column> -->
     </el-table>
 
     <!-- 分页 -->
@@ -198,14 +209,20 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="操作员" prop="operator">
-              <el-select v-model="form.operator" placeholder="选择操作员" size="small">
+              <!-- <el-select v-model="form.operator" placeholder="选择操作员" size="small">
                 <el-option
                   v-for="operator in operatorOptions"
                   :key="operator.id"
                   :label="operator.name"
                   :value="operator.id"
                 />
-              </el-select>
+              </el-select> -->
+              <el-input
+                v-model="form.operator"
+                placeholder="请输入操作员"
+                clearable
+                size="small"
+              />
             </el-form-item>
           </el-col>
 
@@ -381,7 +398,8 @@ export default {
     },
     ppm () {
       if (this.form.qtyCompleted !== 0) {
-        return parseFloat((1000000 * (this.form.qtyRejected + this.form.qtyScrapped) / this.form.qtyCompleted).toFixed(0))
+        let res = parseFloat((1000000 * (this.form.qtyRejected + this.form.qtyScrapped) / this.form.qtyCompleted).toFixed(0))
+        return res
       }
       return ''
     }
@@ -471,6 +489,20 @@ export default {
         this.open = true
         this.title = '修改报工记录'
       })
+    },
+    // 删除按钮操作
+    handleDelete (row) {
+      const id = row.id || this.ids
+      this.$confirm('是否确认删除?', '警告', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        return deleteReportHistById(id)
+      }).then(() => {
+        this.getReportHistList()
+        this.msgSuccess('删除成功')
+      }).catch(function () {})
     },
     submitForm () {
       // console.log(this.form)
