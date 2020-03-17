@@ -97,7 +97,11 @@
       <el-table-column prop="qtyScrapped" label="报废数" width="80"></el-table-column>
       <el-table-column prop="qtyAccepted" label="合格数" width="80"></el-table-column>
       <el-table-column prop="ppm" label="PPM" width="80"></el-table-column>
-      <el-table-column prop="ftq" label="FTQ" width="80"></el-table-column>
+      <el-table-column prop="ftq" label="FTQ" width="80">
+        <template slot-scope="scope">
+          <span>{{ scope.row.ftq | perDisp }}</span>
+        </template>
+      </el-table-column>
       <!-- <el-table-column v-show="false">
         <template slot-scope="scope">
           <el-button 
