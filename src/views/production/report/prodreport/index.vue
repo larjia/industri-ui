@@ -7,7 +7,9 @@
           v-model="queryParams.prodDate"
           type="date"
           placeholder="选择日期"
+          clearable
           size="small"
+          value-format="yyyy-MM-dd"
         />
       </el-form-item>
       <el-form-item label="物料号">
@@ -21,7 +23,9 @@
         </el-select> -->
         <el-input
           v-model="queryParams.partNumber"
+          type="text"
           size="small"
+          clearable
           placeholder="输入物料号"
         />
       </el-form-item>
