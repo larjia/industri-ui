@@ -54,14 +54,14 @@
       </el-table-column>
       <el-table-column prop="partNumber" label="物料号" width="130"></el-table-column>
       <el-table-column prop="operator" label="操作员" width="80"></el-table-column>
-      <el-table-column prop="shift" label="班次" width="50"></el-table-column>
+      <el-table-column prop="shift" label="班次" width="60"></el-table-column>
       <el-table-column prop="prodDept" label="车间部门" width="100"></el-table-column>
-      <el-table-column prop="prodSFGroup" label="班组" width="100"></el-table-column>
-      <el-table-column prop="prodSFOp" label="工序" width="100"></el-table-column>
-      <el-table-column prop="qtyCompleted" label="完成数" width="60"></el-table-column>
-      <el-table-column prop="qtyRejected" label="不良数" width="60"></el-table-column>
-      <el-table-column prop="qtyScrapped" label="报废数" width="60"></el-table-column>
-      <el-table-column prop="qtyAccepted" label="合格数" width="60"></el-table-column>
+      <el-table-column prop="prodSFGroup" label="班组" width="110"></el-table-column>
+      <el-table-column prop="prodSFOp" label="工序" width="120"></el-table-column>
+      <el-table-column prop="qtyCompleted" label="完成数" width="80"></el-table-column>
+      <el-table-column prop="qtyRejected" label="不良数" width="80"></el-table-column>
+      <el-table-column prop="qtyScrapped" label="报废数" width="80"></el-table-column>
+      <el-table-column prop="qtyAccepted" label="合格数" width="80"></el-table-column>
       <el-table-column prop="ppm" label="PPM" width="80"></el-table-column>
       <el-table-column prop="ftq" label="FTQ" width="80"></el-table-column>
     </el-table>
