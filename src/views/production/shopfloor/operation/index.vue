@@ -118,7 +118,7 @@
 </template>
 
 <script>
-import { listOperations, getOperation, addOperation, updateOperation, delOperation } from '@/api/production/shopfloor/operation/operation'
+import { listOperation, getOperation, addOperation, updateOperation, delOperation } from '@/api/production/shopfloor/operation/operation'
 import { listGroup } from '@/api/production/shopfloor/group/group'
 import { listDept } from '@/api/system/dept'
 import Treeselect from "@riophae/vue-treeselect";
@@ -162,7 +162,7 @@ export default {
     // 查询工序列表
     getOpList () {
       this.loading = true
-      listOperations(this.queryParams).then(response => {
+      listOperation(this.queryParams).then(response => {
         this.opList = response.rows
         this.loading = false
       })

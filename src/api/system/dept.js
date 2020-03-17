@@ -9,6 +9,14 @@ export function listDept (query) {
   })
 }
 
+// 查询车间部门列表
+export function listProdDept () {
+  return request({
+    url: '/system/dept/listproddept',
+    method: 'get'
+  })
+}
+
 // 查询部门详细
 export function getDept (deptId) {
   return request({

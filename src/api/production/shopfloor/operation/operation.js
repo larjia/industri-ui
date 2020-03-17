@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 // 查询工序列表
-export function listOperations (query) {
+export function listOperation (query) {
   return request({
     url: '/production/shopfloor/operation/list',
     method: 'get',
