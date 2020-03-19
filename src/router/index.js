@@ -55,7 +55,7 @@ export const constantRoutes = [
     hiddent: true
   },
   {
-    path: '',
+    path: '/',
     component: Layout,
     redirect: 'index',
     children: [
