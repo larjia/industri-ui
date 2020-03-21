@@ -124,11 +124,12 @@
     />
 
     <!-- 添加或修改报工对话框 -->
-    <el-dialog :title="title" :visible.sync="open" :close-on-click-modal="false" :close-on-press-escape="false" width="900px" class="dialog">
+    <el-dialog :title="title" :visible.sync="open" :close-on-click-modal="false" :close-on-press-escape="false" 
+      width="1000px" class="dialog" top="3vh !important">
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <!-- 表单行-生产日期 -->
         <el-row>
-          <el-col :span="16">
+          <el-col :span="8">
             <el-form-item label="生产日期" prop="prodDate">
               <el-date-picker
                 v-model="form.prodDate"
@@ -137,8 +138,28 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="">
+          <el-col :span="16">
+            <el-form-item label="工作时间">
+              <el-time-select
+                v-model="form.startTime"
+                :picker-options="{
+                  start: '00:00',
+                  step: '00:30',
+                  end: '24:00'
+                }"
+                size="small"
+                placeholder="起始时间"
+              />
+              <el-time-select
+                v-model="form.endTime"
+                :picker-options="{
+                  start: '00:00',
+                  step: '00:30',
+                  end: '24:00'
+                }"
+                size="small"
+                placeholder="结束时间"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -146,7 +167,7 @@
         <!-- 表单行-物料号 -->
         <el-row>
           <el-col :span="8">
-            <el-form-item label="物料号" prop="partNumber">
+            <el-form-item label="产品名称" prop="partProjName">
               <!-- <el-select v-model="form.partNumber" placeholder="物料号" clearable size="small">
                 <el-option
                   v-for="part in partOptions"
@@ -155,19 +176,53 @@
                   :value="part.partNumber"
                 />
               </el-select> -->
+              <el-select 
+                v-model="form.partProjName" 
+                value-key="id" 
+                filterable 
+                clearable
+                size="small" 
+                placeholder="请选择" 
+                @change="partSelectionChanged">
+                <el-option
+                  v-for="item in partOptions"
+                  :key="item.id"
+                  :label="item.partProjName"
+                  :value="item">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="ERP编码" prop="partNumber">
               <el-input
                 v-model="form.partNumber"
-                clearable
                 size="small"
+                readonly
               />
             </el-form-item>
           </el-col>
-          <el-col :span="16">
-            <el-form-item label="描述">
+        </el-row>
+
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="零件名称" prop="componentName">
+              <el-select v-model="form.componentName" size="small" placeholder="请选择">
+                <el-option
+                  v-for="item in componentOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="批序号" prop="serialNumber">
               <el-input
+                v-model="form.serialNumber"
                 clearable
                 size="small"
-                readonly
               />
             </el-form-item>
           </el-col>
@@ -177,7 +232,7 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="生产车间" prop="prodDept">
-              <el-select v-model="form.prodDept" value-key="deptId" placeholder="生产车间" clearable size="small" @change='getGroups($event)'>
+              <el-select v-model="form.prodDept" value-key="deptId" placeholder="生产车间" clearable size="small" @change='deptSelectionChanged($event)'>
                 <el-option
                   v-for="dept in deptOptions"
                   :key="dept.deptId"
@@ -189,7 +244,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item label="班组" prop="prodSFGroup">
-              <el-select v-model="form.prodSFGroup" value-key="groupId" placeholder="班组" clearable size="small" @change="getOperations($event)">
+              <el-select v-model="form.prodSFGroup" value-key="groupId" placeholder="班组" clearable size="small" @change="groupSelectionChanged($event)">
                 <el-option
                   v-for="group in groupOptions"
                   :key="group.groupId"
@@ -211,6 +266,18 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col v-if='showReason' :span="6">
+            <el-form-item label="不良原因" prop="rejectReason">
+              <el-select v-model="form.rejectReason" placeholder="请选择" clearable size="small">
+                <el-option
+                  v-for="reason in rejectReasons"
+                  :key="reason.label"
+                  :label="reason.label"
+                  :value="reason.label"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
         </el-row>
 
         <!-- 表单行-班次 操作员 -->
@@ -227,7 +294,7 @@
               </el-select> -->
               <el-input
                 v-model="form.operator"
-                placeholder="请输入操作员"
+                placeholder="操作员姓名"
                 clearable
                 size="small"
               />
@@ -263,16 +330,6 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
-            <el-form-item label="合格数" prop="qtyAccepted">
-              <el-input
-                v-bind:value='qtyAccepted'
-                clearable
-                size="small"
-                readonly
-              />
-            </el-form-item>
-          </el-col>
         </el-row>
 
         <!-- 表单行-不良数 FTQ -->
@@ -283,16 +340,6 @@
                 v-model="form.qtyRejected"
                 clearable
                 size="small"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="FTQ" prop="ftq">
-              <el-input
-                v-bind:value='ftq | perDisp(ftq)'
-                clearable
-                size="small"
-                readonly
               />
             </el-form-item>
           </el-col>
@@ -310,6 +357,47 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
+            <el-form-item v-if="needReason" label="不良原因" prop="reason">
+              <el-select v-model="form.rejectReason" placeholder="请选择" clearable size="small">
+                <el-option
+                  v-for="reason in rejectReasons"
+                  :key="reason.label"
+                  :label="reason.label"
+                  :value="reason.label"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="合格数" prop="qtyAccepted">
+              <el-input
+                v-bind:value='qtyAccepted'
+                clearable
+                size="small"
+                readonly
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="FTQ" prop="ftq">
+              <el-input
+                v-bind:value='ftq | perDisp(ftq)'
+                clearable
+                size="small"
+                readonly
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="8">
             <el-form-item label="PPM" prop="ppm">
               <el-input
                 v-bind:value='ppm'
@@ -322,6 +410,7 @@
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
+        <el-button type="success" @click="submitAndAdd">确定并继续</el-button>
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
@@ -332,12 +421,43 @@
 <script>
 import { listReportHist, getReportHistById, addReportHist, updateReportHist, deleteReportHistById } from '@/api/production/report/prodreport'
 import { listProdDept } from '@/api/system/dept'
+import { listPart } from '@/api/masterdata/part'
 import { listGroup } from '@/api/production/shopfloor/group/group'
 import { listOperation } from '@/api/production/shopfloor/operation/operation'
 
 export default {
   name: 'ProdReport',
   data () {
+    /**
+     * --- 字段 ---
+     * 生产日期: form.prodDate
+     * 开始时间: form.startTime
+     * 结束时间: form.endTime
+     * 产品名称: form.partProjName
+     * 物料编码: form.partNumber
+     * 零件名称: form.componentName
+     * 批序号  : form.serialNumber
+     * 生产车间: form.dept
+     * 班组    : form.group
+     * 工序    : form.op
+     * 操作员  : form.operator
+     * 班次    : form.shift
+     * 不良原因: form.reason
+     * 完成数  : form.qtyCompleted
+     * 不良数  : form.qtyRejected
+     * 报废数  : form.qtyScrapped
+     * 合格数  : form.qtyAccepted
+     * FTQ     : form.ftq
+     * PPM     : form.ppm
+     * 
+     * --- 下拉框 ---
+     * 产品名称: partOptions
+     * 零件名称: componentOptions
+     * 生产车间: deptOptions
+     * 班组    : groupOptions
+     * 工序    : opOptions
+     * 原因    : reasonOptions
+     */
     return {
       // 遮罩层
       loading: false,
@@ -352,7 +472,7 @@ export default {
       // 表格数据
       reportHistList: [],
       // 物料数据
-      // partOptions: [],
+      partOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -372,6 +492,8 @@ export default {
       title: '',
       // 是否显示弹出层
       open: false,
+      // 是否需要选择不良原因
+      needReason: true,
       // 表单参数
       form: {},
       // 表单校验
@@ -413,7 +535,10 @@ export default {
     }
   },
   methods: {
-    // 查询生产报工列表
+    /**
+     * Index View的方法
+     */
+    // 获取生产报工列表
     getReportHistList () {
       this.loading = true
       listReportHist(this.queryParams).then(response => {
@@ -422,11 +547,85 @@ export default {
         this.loading = false
       })
     },
-    // 查询车间部门列表
+    // 表格选择行变化
+    handleSelectionChange (selection) {
+      this.ids = selection.map(item => item.id)
+      this.single = selection.length !== 1
+      this.multiple = !selection.length
+    },
+    // 搜索按钮操作
+    handleQuery () {
+      this.queryParams.pageNum = 1
+      this.getReportHistList()
+    },
+    // 新增按钮操作
+    handleAdd () {
+      this.reset()
+      this.getPartList()
+      this.getDeptList()
+      this.open = true
+      this.title = '新增报工记录'
+    },
+    // 修改按钮操作
+    handleUpdate (row) {
+      this.reset()
+      const id = row.id || this.ids
+      getReportHistById(id).then(response => {
+        this.getDeptList()
+        this.form = response.data
+        this.open = true
+        this.title = '修改报工记录'
+      })
+    },
+    // 删除按钮操作
+    handleDelete (row) {
+      const id = row.id || this.ids
+      this.$confirm('是否确认删除?', '警告', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        return deleteReportHistById(id)
+      }).then(() => {
+        this.getReportHistList()
+        this.msgSuccess('删除成功')
+      }).catch(function () {})
+    },
+
+    /**
+     * 新增或修改页面方法
+     */
+    // 获取产品名称 物料号
+    getPartList () {
+      listPart().then(response => {
+        this.partOptions = response.rows
+      })
+    },
+    // 产品名称选中值发生变化
+    partSelectionChanged (part) {
+      if (part) {
+        this.form.partNumber = part.partNumber
+      } else {
+        this.form.partNumber = undefined
+      }
+    },
+    // 获取零件名称俩表
+    getComponentList () {
+
+    },
+    // 获取车间部门列表
     getDeptList () {
       listProdDept().then(response => {
         this.deptOptions = response.data
       })
+    },
+    // 部门选择值发生变化
+    deptSelectionChanged (dept) {
+
+    },
+    // 班组选择值发生变化
+    groupSelectionChanged (group) {
+
     },
     // 获取当前所选车间下的班组
     getGroups (dept) {
@@ -469,49 +668,7 @@ export default {
       };
       this.resetForm('form')
     },
-    //
-    handleSelectionChange (selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    // 搜索按钮操作
-    handleQuery () {
-      this.queryParams.pageNum = 1
-      this.getReportHistList()
-    },
-    // 新增按钮操作
-    handleAdd () {
-      this.reset()
-      this.getDeptList()
-      this.open = true
-      this.title = '新增报工记录'
-    },
-    // 修改按钮操作
-    handleUpdate (row) {
-      this.reset()
-      const id = row.id || this.ids
-      getReportHistById(id).then(response => {
-        this.getDeptList()
-        this.form = response.data
-        this.open = true
-        this.title = '修改报工记录'
-      })
-    },
-    // 删除按钮操作
-    handleDelete (row) {
-      const id = row.id || this.ids
-      this.$confirm('是否确认删除?', '警告', {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        return deleteReportHistById(id)
-      }).then(() => {
-        this.getReportHistList()
-        this.msgSuccess('删除成功')
-      }).catch(function () {})
-    },
+    // 点击确定按钮
     submitForm () {
       // console.log(this.form)
       this.$refs['form'].validate(valid => {
@@ -563,6 +720,7 @@ export default {
         }
       })
     },
+    // 取消按钮
     cancel () {
       this.open = false
       this.reset()
@@ -591,10 +749,23 @@ export default {
 }
 
 .el-input-number--small {
-  width: 205px;
+  width: 210px;
 }
 
-.el-date-editor {
-  width: 205px;
+/* .el-dialog {
+  margin-top: 3vh !important;
+} */
+
+.el-dialog .el-input {
+  width: 210px;
 }
+
+/* .el-date-editor {
+  width: 205px;
+} */
+
+.el-date-editor+.el-date-editor {
+  margin-left: 10px;
+}
+
 </style>

@@ -128,7 +128,7 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <!-- 表单行-生产日期 -->
         <el-row>
-          <el-col :span="8">
+          <el-col :span="16">
             <el-form-item label="生产日期" prop="prodDate">
               <el-date-picker
                 v-model="form.prodDate"
@@ -137,28 +137,8 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="16">
-            <el-form-item label="起始时间" prop="startTime">
-              <el-time-select
-                v-model="form.startTime"
-                :picker-options="{
-                  start: '00:00',
-                  step: '00:30',
-                  end: '24:00'
-                }"
-                placeholder="开始时间"
-              />
-            </el-form-item>
-            <el-form-item label="结束时间" prop="endTime">
-              <el-time-select
-                v-model="form.endTime"
-                :picker-options="{
-                  start: '00:00',
-                  step: '00:30',
-                  end: '24:00'
-                }"
-                placeholder="结束时间"
-              />
+          <el-col :span="8">
+            <el-form-item label="">
             </el-form-item>
           </el-col>
         </el-row>
@@ -166,7 +146,7 @@
         <!-- 表单行-物料号 -->
         <el-row>
           <el-col :span="8">
-            <el-form-item label="产品名称" prop="partNumber">
+            <el-form-item label="物料号" prop="partNumber">
               <!-- <el-select v-model="form.partNumber" placeholder="物料号" clearable size="small">
                 <el-option
                   v-for="part in partOptions"
@@ -183,7 +163,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="16">
-            <el-form-item label="描述" prop="">
+            <el-form-item label="描述">
               <el-input
                 clearable
                 size="small"
@@ -193,33 +173,9 @@
           </el-col>
         </el-row>
 
-        <el-row>
-          <el-col :span="8">
-            <el-form-item label="零件名称" prop="componentName">
-              <el-select v-model="form.componentName" placeholder="请选择">
-                <el-option
-                  v-for="item in componentOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="批序号" prop="serialNumber">
-              <el-input
-                v-model="form.serialNumber"
-                clearable
-                size="small"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
         <!-- 表单行-车间班组工序 -->
         <el-row>
-          <el-col :span="6">
+          <el-col :span="8">
             <el-form-item label="生产车间" prop="prodDept">
               <el-select v-model="form.prodDept" value-key="deptId" placeholder="生产车间" clearable size="small" @change='getGroups($event)'>
                 <el-option
@@ -231,7 +187,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="8">
             <el-form-item label="班组" prop="prodSFGroup">
               <el-select v-model="form.prodSFGroup" value-key="groupId" placeholder="班组" clearable size="small" @change="getOperations($event)">
                 <el-option
@@ -243,7 +199,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="8">
             <el-form-item label="工序" prop="prodSFOp">
               <el-select v-model="form.prodSFOp" value-key="operationId" placeholder="工序" clearable size="small">
                 <el-option
@@ -251,18 +207,6 @@
                   :key="op.operationId"
                   :label="op.operationName"
                   :value="op"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col v-if='showReason' :span="6">
-            <el-form-item label="不良原因" prop="rejectReason">
-              <el-select v-model="form.rejectReason" placeholder="请选择" clearable size="small">
-                <el-option
-                  v-for="reason in rejectReasons"
-                  :key="reason.label"
-                  :label="reason.label"
-                  :value="reason.label"
                 />
               </el-select>
             </el-form-item>
@@ -378,7 +322,6 @@
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="success" @click="submitAndAdd">确定并继续</el-button>
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
