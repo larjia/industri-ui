@@ -386,7 +386,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submit">确 定</el-button>
-        <el-button v-if="isNew" type="success">确定并继续添加</el-button>
+        <el-button v-if="isNew" type="success" @click="submitContinue">确定并继续添加</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -750,6 +750,35 @@ export default {
               }
             })
           }
+        }
+      })
+    },
+    // 点击确定并继续按钮
+    submitContinue () {
+      this.$refs['form'].validate(valid => {
+        if (valid) {
+          this.form.partProjName = this.form.partProjName.projName
+          this.form.dept = this.form.dept.deptName
+          this.form.group = this.form.group.name
+          this.form.op = this.form.op.name
+          this.form.qtyAccepted = this.qtyAccepted
+          this.form.ppm = this.ppm
+          this.form.ftq = this.ftq
+          if (this.showReason) {
+            this.form.rejectReason = this.form.rejectReason.reason
+          }
+
+          addReportHist(this.form).then(response => {
+            if (response.code === 200) {
+              this.msgSuccess('新增成功')
+              // this.open = false
+              // this.reset()
+              // this.getReportHistList()
+              this.handleAdd()
+            } else {
+              this.msgError(response.msg)
+            }
+          })
         }
       })
     },
