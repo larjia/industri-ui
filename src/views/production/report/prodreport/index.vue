@@ -126,7 +126,7 @@
     <!-- 添加或修改报工对话框 -->
     <el-dialog :title="title" :visible.sync="open" :close-on-click-modal="false" :close-on-press-escape="false" 
       width="1000px" class="dialog" top="3vh !important">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" size="small" :model="form" :rules="rules" label-width="80px">
         <!-- 表单行-生产日期 -->
         <el-row>
           <el-col :span="8">
@@ -187,7 +187,7 @@
                 <el-option
                   v-for="item in partOptions"
                   :key="item.id"
-                  :label="item.partProjName"
+                  :label="item.projName"
                   :value="item">
                 </el-option>
               </el-select>
@@ -210,9 +210,9 @@
               <el-select v-model="form.componentName" size="small" placeholder="请选择">
                 <el-option
                   v-for="item in componentOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
+                  :key="item.dictValue"
+                  :label="item.dictLabel"
+                  :value="item.dictLabel">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -231,37 +231,37 @@
         <!-- 表单行-车间班组工序 -->
         <el-row>
           <el-col :span="8">
-            <el-form-item label="生产车间" prop="prodDept">
-              <el-select v-model="form.prodDept" value-key="deptId" placeholder="生产车间" clearable size="small" @change='deptSelectionChanged($event)'>
+            <el-form-item label="生产车间" prop="dept">
+              <el-select v-model="form.dept" value-key="deptId" placeholder="生产车间" clearable size="small" @change='deptSelectionChanged($event)'>
                 <el-option
-                  v-for="dept in deptOptions"
-                  :key="dept.deptId"
-                  :label="dept.deptName"
-                  :value="dept"
+                  v-for="item in deptOptions"
+                  :key="item.deptId"
+                  :label="item.deptName"
+                  :value="item"
                 />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="班组" prop="prodSFGroup">
-              <el-select v-model="form.prodSFGroup" value-key="groupId" placeholder="班组" clearable size="small" @change="groupSelectionChanged($event)">
+            <el-form-item label="班组" prop="group">
+              <el-select v-model="form.group" value-key="id" placeholder="班组" clearable size="small" @change="groupSelectionChanged($event)">
                 <el-option
-                  v-for="group in groupOptions"
-                  :key="group.groupId"
-                  :label="group.groupName"
-                  :value="group"
+                  v-for="item in groupOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item"
                 />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="工序" prop="prodSFOp">
-              <el-select v-model="form.prodSFOp" value-key="operationId" placeholder="工序" clearable size="small">
+            <el-form-item label="工序" prop="op">
+              <el-select v-model="form.op" value-key="id" placeholder="工序" clearable size="small" @change="opSelectionChanged($event)">
                 <el-option
-                  v-for="op in opOptions"
-                  :key="op.operationId"
-                  :label="op.operationName"
-                  :value="op"
+                  v-for="item in opOptions"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item"
                 />
               </el-select>
             </el-form-item>
@@ -276,45 +276,6 @@
                   :value="reason.label"
                 />
               </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <!-- 表单行-班次 操作员 -->
-        <el-row>
-          <el-col :span="8">
-            <el-form-item label="操作员" prop="operator">
-              <!-- <el-select v-model="form.operator" placeholder="选择操作员" size="small">
-                <el-option
-                  v-for="operator in operatorOptions"
-                  :key="operator.id"
-                  :label="operator.name"
-                  :value="operator.id"
-                />
-              </el-select> -->
-              <el-input
-                v-model="form.operator"
-                placeholder="操作员姓名"
-                clearable
-                size="small"
-              />
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="8">
-            <el-form-item label="班次" prop="shift">
-              <!-- <el-select v-model="form.shift" placeholder="选择班次" clearable size="small">
-                <el-option
-                  v-for="shift in shiftOptions"
-                  :key="shift.id"
-                  :label="shift.name"
-                  :value="shift.id"
-                />
-              </el-select> -->
-              <template>
-                <el-radio v-model="form.shift" label="0">白班</el-radio>
-                <el-radio v-model="form.shift" label="1">夜班</el-radio>
-              </template>
             </el-form-item>
           </el-col>
         </el-row>
@@ -381,9 +342,7 @@
               />
             </el-form-item>
           </el-col>
-        </el-row>
 
-        <el-row>
           <el-col :span="8">
             <el-form-item label="FTQ" prop="ftq">
               <el-input
@@ -394,9 +353,7 @@
               />
             </el-form-item>
           </el-col>
-        </el-row>
 
-        <el-row>
           <el-col :span="8">
             <el-form-item label="PPM" prop="ppm">
               <el-input
@@ -405,6 +362,45 @@
                 size="small"
                 readonly
               />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <!-- 表单行-班次 操作员 -->
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="操作员" prop="operator">
+              <!-- <el-select v-model="form.operator" placeholder="选择操作员" size="small">
+                <el-option
+                  v-for="operator in operatorOptions"
+                  :key="operator.id"
+                  :label="operator.name"
+                  :value="operator.id"
+                />
+              </el-select> -->
+              <el-input
+                v-model="form.operator"
+                placeholder="操作员姓名"
+                clearable
+                size="small"
+              />
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="8">
+            <el-form-item label="班次" prop="shift">
+              <!-- <el-select v-model="form.shift" placeholder="选择班次" clearable size="small">
+                <el-option
+                  v-for="shift in shiftOptions"
+                  :key="shift.id"
+                  :label="shift.name"
+                  :value="shift.id"
+                />
+              </el-select> -->
+              <template>
+                <el-radio v-model="form.shift" label="0">白班</el-radio>
+                <el-radio v-model="form.shift" label="1">夜班</el-radio>
+              </template>
             </el-form-item>
           </el-col>
         </el-row>
@@ -459,6 +455,9 @@ export default {
      * 原因    : reasonOptions
      */
     return {
+      /**
+       * index页面数据
+       */
       // 遮罩层
       loading: false,
       // 选中数组
@@ -471,8 +470,6 @@ export default {
       total: 0,
       // 表格数据
       reportHistList: [],
-      // 物料数据
-      partOptions: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -480,6 +477,13 @@ export default {
         prodDate: undefined,
         partNumber: undefined
       },
+      /**
+       * 新增或修改页面数据
+       */
+      // 产品列表
+      partOptions: [],
+      // 零件名称列表
+      componentOptions: [],
       // 部门列表
       deptOptions: [],
       // 班组列表
@@ -561,8 +565,9 @@ export default {
     // 新增按钮操作
     handleAdd () {
       this.reset()
-      this.getPartList()
-      this.getDeptList()
+      this.getPartList() // 产品名称列表
+      this.getComponentList() // 零件名称列表
+      this.getDeptList() // 部门列表
       this.open = true
       this.title = '新增报工记录'
     },
@@ -604,14 +609,16 @@ export default {
     // 产品名称选中值发生变化
     partSelectionChanged (part) {
       if (part) {
-        this.form.partNumber = part.partNumber
+        this.form.partNumber = part.number
       } else {
-        this.form.partNumber = undefined
+        this.form.partNumber = ''
       }
     },
     // 获取零件名称俩表
     getComponentList () {
-
+      this.getDicts("prod_component_name").then(response => {
+        this.componentOptions = response.data
+      })
     },
     // 获取车间部门列表
     getDeptList () {
@@ -621,40 +628,40 @@ export default {
     },
     // 部门选择值发生变化
     deptSelectionChanged (dept) {
-
+      if (dept) {
+        let query = {
+          deptId: dept.deptId
+        }
+        this.groupOptions = []
+        this.form.group = {}
+        listGroup(query).then(response => {
+          this.groupOptions = response.rows
+        })
+      } else {
+        this.groupOptions = []
+        this.form.group = {}
+        this.opOptions = []
+        this.form.op = {}
+      }
     },
     // 班组选择值发生变化
     groupSelectionChanged (group) {
-
-    },
-    // 获取当前所选车间下的班组
-    getGroups (dept) {
-      // console.log(dept)
-      // console.log(this.form.prodDept)
-      // let dept = this.deptOptions.find((item) => {
-      //   return item.deptName = name
-      // })
-
-      let query = {
-        groupName: undefined,
-        deptId: dept ? dept.deptId : -1
+      if (group) {
+        let query = {
+          groupId: group.id
+        }
+        this.opOptions = []
+        this.form.op = {}
+        listOperation(query).then(response => {
+          this.opOptions = response.rows
+        })
+      } else {
+        this.opOptions = []
+        this.form.op = {}
       }
-
-      this.groupOptions = []
-      listGroup(query).then(response => {
-        this.groupOptions = response.rows
-      })
     },
-    // 获取当前所选班组下的工序
-    getOperations (group) {
-      let query = {
-        operationName: undefined,
-        groupId: group ? group.groupId : -1
-      }
-      this.opOptions = []
-      listOperation(query).then(response => {
-        this.opOptions = response.rows
-      })
+    opSelectionChanged (op) {
+      this.$forceUpdate()
     },
     // 表单重置
     reset () {
