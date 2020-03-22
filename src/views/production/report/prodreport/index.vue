@@ -319,12 +319,12 @@
           </el-col>
           <el-col :span="8">
             <el-form-item v-if="showReason" label="不良原因" prop="reason">
-              <el-select v-model="form.rejectReason" placeholder="请选择" clearable size="small">
+              <el-select v-model="form.rejectReason" value-key="id" placeholder="请选择" clearable size="small">
                 <el-option
-                  v-for="reason in rejectReasons"
-                  :key="reason.label"
-                  :label="reason.label"
-                  :value="reason.label"
+                  v-for="item in reasonOptions"
+                  :key="item.id"
+                  :label="item.reason"
+                  :value="item"
                 />
               </el-select>
             </el-form-item>
@@ -420,6 +420,7 @@ import { listProdDept } from '@/api/system/dept'
 import { listPart } from '@/api/masterdata/part'
 import { listGroup } from '@/api/production/shopfloor/group/group'
 import { listOperation } from '@/api/production/shopfloor/operation/operation'
+import { listReason } from '@/api/production/shopfloor/operation/oprejectreason'
 
 export default {
   name: 'ProdReport',
@@ -490,6 +491,8 @@ export default {
       groupOptions: [],
       // 工序列表
       opOptions: [],
+      // 不良原因列表
+      reasonOptions: [],
       // 员工列表
       operatorOptions: [],
       // 弹出层标题
@@ -675,8 +678,17 @@ export default {
       // if (Object.keys(op).length !== 0 && op.needReason !== '0') {
       if (op && op.needReason !== '0') {
         this.needReason = true
+        // 加载不良原因列表
+        let query = {
+          opId: op.id
+        }
+        listReason(query).then(response => {
+          this.reasonOptions = response.rows
+        })
       } else {
         this.needReason = false
+        // 清空不良原因
+        this.reasonOptions = []
       }
       this.$forceUpdate()
     },
