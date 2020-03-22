@@ -82,6 +82,12 @@
           <span>{{ parseTime(scope.row.prodDate, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
+      <el-table-column prop="reportDate" label="报工日期" width="110">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.reportDate, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="partProjName" label="产品名称" width="200"></el-table-column>
       <el-table-column prop="partNumber" label="物料号" width="140"></el-table-column>
       <el-table-column prop="operator" label="操作员" width="90"></el-table-column>
       <el-table-column prop="shift" label="班次" width="70">
@@ -89,13 +95,16 @@
           <span>{{ scope.row.shift | shiftDisp }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="prodDept" label="车间部门" width="100"></el-table-column>
-      <el-table-column prop="prodSFGroup" label="班组" width="110"></el-table-column>
-      <el-table-column prop="prodSFOp" label="工序" width="120"></el-table-column>
+      <el-table-column prop="dept" label="车间部门" width="100"></el-table-column>
+      <el-table-column prop="group" label="班组" width="110"></el-table-column>
+      <el-table-column prop="op" label="工序" width="120"></el-table-column>
+      <el-table-column prop="componentName" label="零件名称" width="120"></el-table-column>
+      <el-table-column prop="serialNumber" label="批序号" width="120"></el-table-column>
       <el-table-column prop="qtyCompleted" label="完成数" width="80"></el-table-column>
       <el-table-column prop="qtyRejected" label="不良数" width="80"></el-table-column>
       <el-table-column prop="qtyScrapped" label="报废数" width="80"></el-table-column>
       <el-table-column prop="qtyAccepted" label="合格数" width="80"></el-table-column>
+      <el-table-column prop="reason" label="不良原因" width="250"></el-table-column>
       <el-table-column prop="ppm" label="PPM" width="80"></el-table-column>
       <el-table-column prop="ftq" label="FTQ" width="80">
         <template slot-scope="scope">
