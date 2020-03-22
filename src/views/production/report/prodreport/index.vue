@@ -13,14 +13,6 @@
         />
       </el-form-item>
       <el-form-item label="物料号">
-        <!-- <el-select v-model="queryParams.partNumber" placeholder="物料号" clearable size="small">
-          <el-option
-            v-for="part in partOptions"
-            :key="part.partId"
-            :label="part.partNumber"
-            :value="part.partNumber"
-          />
-        </el-select> -->
         <el-input
           v-model="queryParams.partNumber"
           type="text"
@@ -104,23 +96,13 @@
       <el-table-column prop="qtyRejected" label="不良数" width="80"></el-table-column>
       <el-table-column prop="qtyScrapped" label="报废数" width="80"></el-table-column>
       <el-table-column prop="qtyAccepted" label="合格数" width="80"></el-table-column>
-      <el-table-column prop="reason" label="不良原因" width="250"></el-table-column>
+      <el-table-column prop="rejectReason" label="不良原因" width="250"></el-table-column>
       <el-table-column prop="ppm" label="PPM" width="80"></el-table-column>
       <el-table-column prop="ftq" label="FTQ" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.ftq | perDisp }}</span>
         </template>
       </el-table-column>
-      <!-- <el-table-column v-show="false">
-        <template slot-scope="scope">
-          <el-button 
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click='handleDelete(scope.row)'
-          >删除</el-button>
-        </template>
-      </el-table-column> -->
     </el-table>
 
     <!-- 分页 -->
@@ -177,14 +159,6 @@
         <el-row>
           <el-col :span="8">
             <el-form-item label="产品名称" prop="partProjName">
-              <!-- <el-select v-model="form.partNumber" placeholder="物料号" clearable size="small">
-                <el-option
-                  v-for="part in partOptions"
-                  :key="part.partId"
-                  :label="part.partNumber"
-                  :value="part.partNumber"
-                />
-              </el-select> -->
               <el-select 
                 v-model="form.partProjName" 
                 value-key="id" 
@@ -275,18 +249,6 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <!-- <el-col v-if='showReason' :span="6">
-            <el-form-item label="不良原因" prop="rejectReason">
-              <el-select v-model="form.rejectReason" placeholder="请选择" clearable size="small">
-                <el-option
-                  v-for="reason in rejectReasons"
-                  :key="reason.label"
-                  :label="reason.label"
-                  :value="reason.label"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col> -->
         </el-row>
 
         <!-- 表单行-完成数 合格数 -->
@@ -327,7 +289,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item v-if="showReason" label="不良原因" prop="reason">
+            <el-form-item v-if="showReason" label="不良原因" prop="rejectReason">
               <el-select v-model="form.rejectReason" value-key="id" placeholder="请选择" clearable size="small">
                 <el-option
                   v-for="item in reasonOptions"
@@ -415,8 +377,8 @@
         </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="success" @click="submitAndAdd">确定并继续</el-button>
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button type="primary" @click="submit">确 定</el-button>
+        <el-button v-if="isNew" type="success">确定并继续添加</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -516,7 +478,9 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      // 是否为新增或修改(false: 修改 true: 新增)
+      isNew: false
     }
   },
   created () {
@@ -551,6 +515,7 @@ export default {
       }
       return ''
     },
+    // 是否需要显示并选择原因
     showReason () {
       if (this.needReason && (this.form.qtyRejected !== 0 || this.form.qtyScrapped !== 0)) {
         return true
@@ -584,6 +549,7 @@ export default {
     },
     // 新增按钮操作
     handleAdd () {
+      this.isNew = true
       this.reset()
       this.getPartList() // 产品名称列表
       this.getComponentList() // 零件名称列表
@@ -593,6 +559,7 @@ export default {
     },
     // 修改按钮操作
     handleUpdate (row) {
+      this.isNew = false
       this.reset()
       const id = row.id || this.ids
       getReportHistById(id).then(response => {
@@ -706,12 +673,47 @@ export default {
       this.form = {
         prodDate: new Date(), // 默认当前日期
         shift: '0', // 默认白班
+        partNumber: '', // ERP物料号
+        serialNumber: '', // 批序号
         qtyCompleted: 0,
         qtyRejected: 0,
         qtyScrapped: 0,
+        reasonOptions: [] // 清空原因列表
         // qtyAccepted: this.qtyAccepted
       };
       this.resetForm('form')
+    },
+    // 点击确定按钮
+    submit () {
+      this.$refs['form'].validate(valid => {
+        if (valid) {
+          if (this.isNew) { // 新增
+            this.form.partProjName = this.form.partProjName.projName
+            this.form.dept = this.form.dept.deptName
+            this.form.group = this.form.group.name
+            this.form.op = this.form.op.name
+            this.form.qtyAccepted = this.qtyAccepted
+            this.form.ppm = this.ppm
+            this.form.ftq = this.ftq
+            if (this.showReason) {
+              this.form.rejectReason = this.form.rejectReason.reason
+            }
+
+            addReportHist(this.form).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess('新增成功')
+                this.open = false
+                this.getReportHistList()
+              } else {
+                this.msgError(response.msg)
+              }
+            })
+
+          } else {          // 修改
+
+          }
+        }
+      })
     },
     // 点击确定按钮
     submitForm () {
