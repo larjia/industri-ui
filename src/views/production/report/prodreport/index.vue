@@ -87,6 +87,8 @@
           <span>{{ scope.row.shift | shiftDisp }}</span>
         </template>
       </el-table-column>
+      <el-table-column prop="startTime" label="开始时间" width="100"></el-table-column>
+      <el-table-column prop="endTime" label="结束时间" width="100"></el-table-column>
       <el-table-column prop="dept" label="车间部门" width="100"></el-table-column>
       <el-table-column prop="group" label="班组" width="110"></el-table-column>
       <el-table-column prop="op" label="工序" width="120"></el-table-column>
@@ -465,7 +467,7 @@ export default {
       // 不良原因列表
       reasonOptions: [],
       // 员工列表
-      operatorOptions: [],
+      // operatorOptions: [],
       // 弹出层标题
       title: '',
       // 是否显示弹出层
@@ -563,6 +565,8 @@ export default {
       this.reset()
       const id = row.id || this.ids
       getReportHistById(id).then(response => {
+        this.getPartList()
+        this.getComponentList()
         this.getDeptList()
         this.form = response.data
         this.open = true
@@ -710,7 +714,26 @@ export default {
             })
 
           } else {          // 修改
+            this.form.partProjName = this.form.partProjName.projName
+            this.form.dept = this.form.dept.deptName
+            this.form.group = this.form.group.name
+            this.form.op = this.form.op.name
+            this.form.qtyAccepted = this.qtyAccepted
+            this.form.ppm = this.ppm
+            this.form.ftq = this.ftq
+            if (this.form.rejectReason) {
+              this.showReason = true
+            }
 
+            updateReportHist(this.form).then(response => {
+              if (response.code === 200) {
+                this.msgSuccess('修改成功')
+                this.open = false
+                this.getReportHistList()
+              } else {
+                this.msgError(response.msg)
+              }
+            })
           }
         }
       })
