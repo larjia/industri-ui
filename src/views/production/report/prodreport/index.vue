@@ -266,7 +266,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col v-if='showReason' :span="6">
+          <!-- <el-col v-if='showReason' :span="6">
             <el-form-item label="不良原因" prop="rejectReason">
               <el-select v-model="form.rejectReason" placeholder="请选择" clearable size="small">
                 <el-option
@@ -277,7 +277,7 @@
                 />
               </el-select>
             </el-form-item>
-          </el-col>
+          </el-col> -->
         </el-row>
 
         <!-- 表单行-完成数 合格数 -->
@@ -318,7 +318,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item v-if="needReason" label="不良原因" prop="reason">
+            <el-form-item v-if="showReason" label="不良原因" prop="reason">
               <el-select v-model="form.rejectReason" placeholder="请选择" clearable size="small">
                 <el-option
                   v-for="reason in rejectReasons"
@@ -438,7 +438,7 @@ export default {
      * 工序    : form.op
      * 操作员  : form.operator
      * 班次    : form.shift
-     * 不良原因: form.reason
+     * 不良原因: form.rejectReason
      * 完成数  : form.qtyCompleted
      * 不良数  : form.qtyRejected
      * 报废数  : form.qtyScrapped
@@ -497,7 +497,9 @@ export default {
       // 是否显示弹出层
       open: false,
       // 是否需要选择不良原因
-      needReason: true,
+      needReason: false,
+      // 是否需要显示不良原因选择框
+      // showReason: false,
       // 表单参数
       form: {},
       // 表单校验
@@ -536,6 +538,12 @@ export default {
         return res
       }
       return ''
+    },
+    showReason () {
+      if (this.needReason && (this.form.qtyRejected !== 0 || this.form.qtyScrapped !== 0)) {
+        return true
+      }
+      return false
     }
   },
   methods: {
@@ -643,9 +651,11 @@ export default {
         this.opOptions = []
         this.form.op = {}
       }
+      this.needReason = false
     },
     // 班组选择值发生变化
     groupSelectionChanged (group) {
+      // if (Object.keys(group).length !== 0) {
       if (group) {
         let query = {
           groupId: group.id
@@ -659,8 +669,15 @@ export default {
         this.opOptions = []
         this.form.op = {}
       }
+      this.needReason = false
     },
     opSelectionChanged (op) {
+      // if (Object.keys(op).length !== 0 && op.needReason !== '0') {
+      if (op && op.needReason !== '0') {
+        this.needReason = true
+      } else {
+        this.needReason = false
+      }
       this.$forceUpdate()
     },
     // 表单重置
