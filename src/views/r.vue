@@ -1,124 +1,8 @@
 <template>
   <div class="app-container">
-    <!-- 搜素表单 -->
-    <el-form :inline="true">
-      <el-form-item label="生产日期">
-        <el-date-picker
-          v-model="queryParams.prodDate"
-          type="date"
-          placeholder="选择日期"
-          clearable
-          size="small"
-          value-format="yyyy-MM-dd"
-        />
-      </el-form-item>
-      <el-form-item label="物料号">
-        <el-input
-          v-model="queryParams.partNumber"
-          type="text"
-          size="small"
-          clearable
-          placeholder="输入物料号"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button
-          class="filter-item"
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-        >搜索</el-button>
-        <el-button
-          class="filter-item"
-          type="primary"
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-        >新增</el-button>
-        <el-button
-          type="success"
-          icon="el-icon-edit"
-          size="mini"
-          :disabled='single'
-          @click="handleUpdate"
-        >修改</el-button>
-        <el-button
-          type="danger"
-          icon="el-icon-delete"
-          size="mini"
-          :disabled='single'
-          @click="handleDelete"
-        >删除</el-button>
-        <el-button
-          type="warning"
-          icon="el-icon-download"
-          size="mini"
-        >导出</el-button>
-      </el-form-item>
-    </el-form>
-
-    <!-- 数据表格 -->
-    <el-table
-      v-loading='loading'
-      :data='reportHistList'
-      row-key='id'
-      border
-      stripe
-      :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column prop="prodDate" label="生产日期" width="110">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.prodDate, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="reportDate" label="报工日期" width="110">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.reportDate, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="partProjName" label="产品名称" width="200"></el-table-column>
-      <el-table-column prop="partNumber" label="物料号" width="140"></el-table-column>
-      <el-table-column prop="operator" label="操作员" width="90"></el-table-column>
-      <el-table-column prop="shift" label="班次" width="70">
-        <template slot-scope="scope">
-          <span>{{ scope.row.shift | shiftDisp }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="startTime" label="开始时间" width="100"></el-table-column>
-      <el-table-column prop="endTime" label="结束时间" width="100"></el-table-column>
-      <el-table-column prop="dept" label="车间部门" width="100"></el-table-column>
-      <el-table-column prop="group" label="班组" width="110"></el-table-column>
-      <el-table-column prop="op" label="工序" width="120"></el-table-column>
-      <el-table-column prop="componentName" label="零件名称" width="120"></el-table-column>
-      <el-table-column prop="serialNumber" label="批序号" width="120"></el-table-column>
-      <el-table-column prop="qtyCompleted" label="完成数" width="80"></el-table-column>
-      <el-table-column prop="qtyRejected" label="不良数" width="80"></el-table-column>
-      <el-table-column prop="qtyScrapped" label="报废数" width="80"></el-table-column>
-      <el-table-column prop="qtyAccepted" label="合格数" width="80"></el-table-column>
-      <el-table-column prop="rejectReason" label="不良原因" width="250"></el-table-column>
-      <el-table-column prop="ppm" label="PPM" width="80"></el-table-column>
-      <el-table-column prop="ftq" label="FTQ" width="80">
-        <template slot-scope="scope">
-          <span>{{ scope.row.ftq | perDisp }}</span>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <!-- 分页 -->
-    <pagination
-      v-show='total > 0'
-      :total='total'
-      :page.sync='queryParams.pageNum'
-      :limit.sync='queryParams.pageSize'
-      @pagination='getReportHistList'
-    />
-
     <!-- 添加或修改报工对话框 -->
-    <el-dialog :title="title" :visible.sync="open" :close-on-click-modal="false" :close-on-press-escape="false" 
-      :width="dialogWidth" class="dialog" top="3vh !important">
+    <el-card :title="title" :visible.sync="open" :close-on-click-modal="false" :close-on-press-escape="false" 
+      width="1000px" class="dialog" top="3vh !important">
       <el-form ref="form" size="small" :model="form" :rules="rules" label-width="80px">
         <!-- 表单行-生产日期 -->
         <el-row>
@@ -131,10 +15,8 @@
               />
             </el-form-item>
           </el-col>
-
-<el-col :span="16">
+          <el-col :span="16" :xs="{span:24, offset:0}">
             <el-form-item label="工作时间">
-              <el-col :span="8" :xs="{span:24, offset:0}">
               <el-time-select
                 v-model="form.startTime"
                 :picker-options="{
@@ -145,9 +27,6 @@
                 size="small"
                 placeholder="起始时间"
               />
-              </el-col>
-              
-              <el-col :span="8" :offset="2" :xs="{span:24, offset:0}">
               <el-time-select
                 v-model="form.endTime"
                 :picker-options="{
@@ -158,9 +37,8 @@
                 size="small"
                 placeholder="结束时间"
               />
-              </el-col>
             </el-form-item>
-</el-col>
+          </el-col>
         </el-row>
 
         <!-- 表单行-物料号 -->
@@ -389,7 +267,7 @@
         <el-button v-if="isNew" type="success">确定并继续添加</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
+    </el-card>
   </div>
 </template>
 
@@ -402,7 +280,7 @@ import { listOperation } from '@/api/production/shopfloor/operation/operation'
 import { listReason } from '@/api/production/shopfloor/operation/oprejectreason'
 
 export default {
-  name: 'ProdReport',
+  name: 'ProductionReport',
   data () {
     /**
      * --- 字段 ---
@@ -477,7 +355,7 @@ export default {
       // 弹出层标题
       title: '',
       // 是否显示弹出层
-      open: false,
+      open: true,
       // 是否需要选择不良原因
       needReason: false,
       // 是否需要显示不良原因选择框
@@ -488,20 +366,11 @@ export default {
       rules: {
       },
       // 是否为新增或修改(false: 修改 true: 新增)
-      isNew: false,
-      dialogWidth: 0
+      isNew: false
     }
   },
   created () {
-    this.setDialogWidth()
     this.getReportHistList()
-  },
-  mounted () {
-    window.onresize = () => {
-      return (() => {
-        this.setDialogWidth()
-      })()
-    }
   },
   filters: {
     perDisp (value) {
@@ -809,15 +678,6 @@ export default {
     cancel () {
       this.open = false
       this.reset()
-    },
-    setDialogWidth () {
-      var val = document.body.clientWidth
-      const def = 1000 // 默认宽度
-      if (val < 1000) {
-        this.dialogWidth = '100%'
-      } else {
-        this.dialogWidth = def + 'px'
-      }
     }
   }
 }
