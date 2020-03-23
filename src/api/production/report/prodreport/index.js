@@ -42,3 +42,12 @@ export function deleteReportHistById (id) {
     method: 'delete'
   })
 }
+
+// 导出生产报工数据
+export function exportData (query) {
+  return request({
+    url: '/production/report/prodreporthist/export',
+    method: 'get',
+    params: query
+  })
+}

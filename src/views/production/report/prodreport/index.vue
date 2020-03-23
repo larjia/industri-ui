@@ -54,6 +54,7 @@
           type="warning"
           icon="el-icon-download"
           size="mini"
+          @click="handleExport"
         >导出</el-button>
       </el-form-item>
     </el-form>
@@ -394,7 +395,17 @@
 </template>
 
 <script>
-import { listReportHist, getReportHistById, addReportHist, updateReportHist, deleteReportHistById } from '@/api/production/report/prodreport'
+import 
+{ 
+  listReportHist, 
+  getReportHistById, 
+  addReportHist, 
+  updateReportHist, 
+  deleteReportHistById, 
+  exportData
+}
+from '@/api/production/report/prodreport'
+
 import { listProdDept } from '@/api/system/dept'
 import { listPart } from '@/api/masterdata/part'
 import { listGroup } from '@/api/production/shopfloor/group/group'
@@ -602,7 +613,19 @@ export default {
         this.msgSuccess('删除成功')
       }).catch(function () {})
     },
-
+    // 导出按钮操作
+    handleExport () {
+      const queryParams = this.queryParams
+      this.$confirm('是否确认导出所有数据项?', '信息', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        return exportData(queryParams)
+      }).then(response => {
+        this.download(response.msg)
+      }).catch(function () {})
+    },
     /**
      * 新增或修改页面方法
      */
