@@ -9,14 +9,6 @@ export function listGroup (query) {
   })
 }
 
-// 根据车间Id查询班组
-export function getGroupByDeptId (deptId) {
-  return request({
-    url: '/production/sf/group/getgroupbydeptid/' + deptId,
-    method: 'get'
-  })
-}
-
 // 查询班组详细
 export function getGroup (groupId) {
   return request({

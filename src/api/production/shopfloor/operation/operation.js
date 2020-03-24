@@ -10,9 +10,9 @@ export function listOperation (query) {
 }
 
 // 查询工序详细
-export function getOperation (opId) {
+export function getOperation (id) {
   return request({
-    url: '/production/sf/operation/' + opId,
+    url: '/production/sf/operation/' + id,
     method: 'get'
   })
 }

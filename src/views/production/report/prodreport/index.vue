@@ -236,24 +236,24 @@
           </el-col>
           <el-col :span="8" :xs="{span:24, offset:0}">
             <el-form-item label="班组" prop="group">
-              <el-select v-model="form.group" value-key="id" placeholder="班组" clearable size="small" @change="groupSelectionChanged($event)">
+              <el-select v-model="form.group" placeholder="班组" clearable size="small" @change="groupSelectionChanged($event)">
                 <el-option
                   v-for="item in groupOptions"
                   :key="item.id"
                   :label="item.name"
-                  :value="item"
+                  :value="item.name"
                 />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8" :xs="{span:24, offset:0}">
             <el-form-item label="工序" prop="op">
-              <el-select v-model="form.op" value-key="id" placeholder="工序" clearable size="small" @change="opSelectionChanged($event)">
+              <el-select v-model="form.op" placeholder="工序" clearable size="small" @change="opSelectionChanged($event)">
                 <el-option
                   v-for="item in opOptions"
                   :key="item.id"
                   :label="item.name"
-                  :value="item"
+                  :value="item.name"
                 />
               </el-select>
             </el-form-item>
@@ -350,14 +350,6 @@
         <el-row>
           <el-col :span="8" :xs="{span:24, offset:0}">
             <el-form-item label="操作员" prop="operator">
-              <!-- <el-select v-model="form.operator" placeholder="选择操作员" size="small">
-                <el-option
-                  v-for="operator in operatorOptions"
-                  :key="operator.id"
-                  :label="operator.name"
-                  :value="operator.id"
-                />
-              </el-select> -->
               <el-input
                 v-model="form.operator"
                 placeholder="操作员姓名"
@@ -369,14 +361,6 @@
 
           <el-col :span="8" :xs="{span:24, offset:0}">
             <el-form-item label="班次" prop="shift">
-              <!-- <el-select v-model="form.shift" placeholder="选择班次" clearable size="small">
-                <el-option
-                  v-for="shift in shiftOptions"
-                  :key="shift.id"
-                  :label="shift.name"
-                  :value="shift.id"
-                />
-              </el-select> -->
               <template>
                 <el-radio v-model="form.shift" label="0">白班</el-radio>
                 <el-radio v-model="form.shift" label="1">夜班</el-radio>
@@ -408,7 +392,7 @@ from '@/api/production/report/prodreport'
 
 import { listProdDept } from '@/api/system/dept'
 import { listPart } from '@/api/masterdata/part'
-import { listGroup, getGroupByDeptId } from '@/api/production/shopfloor/group/group'
+import { listGroup } from '@/api/production/shopfloor/group/group'
 import { listOperation } from '@/api/production/shopfloor/operation/operation'
 import { listReason } from '@/api/production/shopfloor/operation/oprejectreason'
 
@@ -658,53 +642,57 @@ export default {
     // 部门选择值发生变化
     deptSelectionChanged (dept) {
       if (dept) {
-        // let query = {
-        //   deptId: dept.deptId
-        // }
         let deptId = this.deptOptions.find(item => item.deptName === dept).deptId
         if (deptId) {
           this.groupOptions = []
-          this.form.group = {}
-          // listGroup(query).then(response => {
-          //   this.groupOptions = response.rows
-          // })
-          getGroupByDeptId(deptId).then(response => {
+          this.form.group = ''
+          this.form.op = ''
+          let query = {
+            deptId: deptId
+          }
+          listGroup(query).then(response => {
             this.groupOptions = response.rows
           })
         }
       } else {
         this.groupOptions = []
-        this.form.group = {}
+        this.form.group = ''
         this.opOptions = []
-        this.form.op = {}
+        this.form.op = ''
       }
-      this.needReason = false
+      // this.needReason = false
     },
     // 班组选择值发生变化
     groupSelectionChanged (group) {
-      // if (Object.keys(group).length !== 0) {
       if (group) {
-        let query = {
-          groupId: group.id
+        let groupId = this.groupOptions.find(item => item.name === group).id
+        if (groupId) {
+          this.opOptions = []
+          this.form.op = ''
+          let query = {
+            groupId: groupId
+          }
+          listOperation(query).then(response => {
+            this.opOptions = response.rows
+          })
         }
-        this.opOptions = []
-        this.form.op = {}
-        listOperation(query).then(response => {
-          this.opOptions = response.rows
-        })
       } else {
         this.opOptions = []
-        this.form.op = {}
+        this.form.op = ''
       }
-      this.needReason = false
+      // this.needReason = false
     },
     opSelectionChanged (op) {
-      // if (Object.keys(op).length !== 0 && op.needReason !== '0') {
-      if (op && op.needReason !== '0') {
-        this.needReason = true
-        // 加载不良原因列表
+      if (op) {
+        let info = this.opOptions.find(item => item.name === op)
+        
+        if (info.needReason === '1') {
+          this.needReason = true
+        } else {
+          this.needReason = false
+        }
         let query = {
-          opId: op.id
+          opId: info.id
         }
         listReason(query).then(response => {
           this.reasonOptions = response.rows
@@ -726,7 +714,6 @@ export default {
         qtyCompleted: 0,
         qtyRejected: 0,
         qtyScrapped: 0,
-        reasonOptions: [] // 清空原因列表
         // qtyAccepted: this.qtyAccepted
       };
       this.resetForm('form')
