@@ -298,12 +298,12 @@
           </el-col>
           <el-col :span="8" :xs="{span:24, offset:0}">
             <el-form-item v-if="showReason" label="不良原因" prop="rejectReason">
-              <el-select v-model="form.rejectReason" value-key="id" placeholder="请选择" clearable size="small">
+              <el-select v-model="form.rejectReason" placeholder="请选择" clearable size="small">
                 <el-option
                   v-for="item in reasonOptions"
                   :key="item.id"
                   :label="item.reason"
-                  :value="item"
+                  :value="item.reason"
                 />
               </el-select>
             </el-form-item>
@@ -641,46 +641,41 @@ export default {
     },
     // 部门选择值发生变化
     deptSelectionChanged (dept) {
+      this.groupOptions = []
+      this.form.group = ''
+      this.opOptions = []
+      this.form.op = ''
+      this.needReason = false
+      this.reasonOptions = []
+      this.form.rejectReason = ''
+
       if (dept) {
         let deptId = this.deptOptions.find(item => item.deptName === dept).deptId
-        if (deptId) {
-          this.groupOptions = []
-          this.form.group = ''
-          this.form.op = ''
-          let query = {
-            deptId: deptId
-          }
-          listGroup(query).then(response => {
-            this.groupOptions = response.rows
-          })
+        let query = {
+          deptId: deptId
         }
-      } else {
-        this.groupOptions = []
-        this.form.group = ''
-        this.opOptions = []
-        this.form.op = ''
+        listGroup(query).then(response => {
+          this.groupOptions = response.rows
+        })
       }
-      // this.needReason = false
     },
     // 班组选择值发生变化
     groupSelectionChanged (group) {
+      this.opOptions = []
+      this.form.op = ''
+      this.needReason = false
+      this.reasonOptions = []
+      this.form.rejectReason = ''
+
       if (group) {
         let groupId = this.groupOptions.find(item => item.name === group).id
-        if (groupId) {
-          this.opOptions = []
-          this.form.op = ''
-          let query = {
-            groupId: groupId
-          }
-          listOperation(query).then(response => {
-            this.opOptions = response.rows
-          })
+        let query = {
+          groupId: groupId
         }
-      } else {
-        this.opOptions = []
-        this.form.op = ''
+        listOperation(query).then(response => {
+          this.opOptions = response.rows
+        })
       }
-      // this.needReason = false
     },
     opSelectionChanged (op) {
       if (op) {
@@ -699,8 +694,8 @@ export default {
         })
       } else {
         this.needReason = false
-        // 清空不良原因
         this.reasonOptions = []
+        this.form.rejectReason = ''
       }
       this.$forceUpdate()
     },
@@ -713,14 +708,12 @@ export default {
         // serialNumber: '', // 批序号
         qtyCompleted: 0,
         qtyRejected: 0,
-        qtyScrapped: 0,
-        partOptions: [],
-        componentOptions: [],
-        deptOptions: [],
-        groupOptions: [],
-        opOptions: [],
-        reasonOptions: []
+        qtyScrapped: 0
       };
+      this.partOptions = [],
+      this.componentOptions = [],
+      this.deptOptions = [],
+      // this.reasonOptions = [],
       this.resetForm('form')
     },
     // 点击确定按钮
@@ -728,16 +721,12 @@ export default {
       this.$refs['form'].validate(valid => {
         if (valid) {
           if (this.isNew) { // 新增
-            this.form.partProjName = this.form.partProjName.projName
-            this.form.dept = this.form.dept.deptName
-            this.form.group = this.form.group.name
-            this.form.op = this.form.op.name
             this.form.qtyAccepted = this.qtyAccepted
             this.form.ppm = this.ppm
             this.form.ftq = this.ftq
-            if (this.showReason) {
-              this.form.rejectReason = this.form.rejectReason.reason
-            }
+            // if (this.showReason) {
+            //   this.form.rejectReason = this.form.rejectReason.reason
+            // }
 
             addReportHist(this.form).then(response => {
               if (response.code === 200) {
