@@ -119,7 +119,7 @@
 
     <!-- 添加或修改报工对话框 -->
     <el-dialog :title="title" :visible.sync="open" :close-on-click-modal="false" :close-on-press-escape="false" 
-      :width="dialogWidth" class="dialog" top="3vh !important">
+      :width="dialogWidth" class="dialog" top="3vh !important" @close="closeDialog">
       <el-form ref="form" size="small" :model="form" :rules="rules" label-width="80px">
         <!-- 表单行-生产日期 -->
         <el-row>
@@ -223,7 +223,7 @@
         <el-row>
           <el-col :span="8" :xs="{span:24, offset:0}">
             <el-form-item label="生产车间" prop="dept">
-              <el-select v-model="form.dept" placeholder="生产车间" clearable size="small" @change='deptSelectionChanged($event)'>
+              <el-select v-model="form.dept" placeholder="生产车间" clearable size="small" @change='deptSelectionChanged'>
                 <el-option
                   v-for="item in deptOptions"
                   :key="item.deptId"
@@ -235,7 +235,7 @@
           </el-col>
           <el-col :span="8" :xs="{span:24, offset:0}">
             <el-form-item label="班组" prop="group">
-              <el-select v-model="form.group" placeholder="班组" clearable size="small" @change="groupSelectionChanged($event)">
+              <el-select v-model="form.group" placeholder="班组" clearable size="small" @change="groupSelectionChanged">
                 <el-option
                   v-for="item in groupOptions"
                   :key="item.id"
@@ -247,7 +247,7 @@
           </el-col>
           <el-col :span="8" :xs="{span:24, offset:0}">
             <el-form-item label="工序" prop="op">
-              <el-select v-model="form.op" placeholder="工序" clearable size="small" @change="opSelectionChanged($event)">
+              <el-select v-model="form.op" placeholder="工序" clearable size="small" @change="opSelectionChanged">
                 <el-option
                   v-for="item in opOptions"
                   :key="item.id"
@@ -298,7 +298,7 @@
           </el-col>
           <el-col :span="8" :xs="{span:24, offset:0}">
             <el-form-item v-if="showReason" label="不良原因" prop="rejectReason">
-              <el-select v-model="form.rejectReason" placeholder="请选择" clearable size="small">
+              <el-select v-model="form.rejectReason" placeholder="请选择" clearable size="small" @change="reasonSelectionChanged($event)">
                 <el-option
                   v-for="item in reasonOptions"
                   :key="item.id"
@@ -677,6 +677,7 @@ export default {
         })
       }
     },
+    // 工序选择值发生变化
     opSelectionChanged (op) {
       if (op) {
         let info = this.opOptions.find(item => item.name === op)
@@ -699,6 +700,9 @@ export default {
       }
       this.$forceUpdate()
     },
+    reasonSelectionChanged () {
+      this.$forceUpdate()
+    },
     // 表单重置
     reset () {
       this.form = {
@@ -713,7 +717,9 @@ export default {
       this.partOptions = [],
       this.componentOptions = [],
       this.deptOptions = [],
-      // this.reasonOptions = [],
+      this.groupOptions = [],
+      this.opOptions = [],
+      this.reasonOptions = [],
       this.resetForm('form')
     },
     // 点击确定按钮
@@ -847,6 +853,10 @@ export default {
     // 取消按钮
     cancel () {
       this.open = false
+      this.reset()
+    },
+    // 关闭对话框
+    closeDialog () {
       this.reset()
     },
     setDialogWidth () {
