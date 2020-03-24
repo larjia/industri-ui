@@ -224,12 +224,12 @@
         <el-row>
           <el-col :span="8" :xs="{span:24, offset:0}">
             <el-form-item label="生产车间" prop="dept">
-              <el-select v-model="form.dept" placeholder="生产车间" clearable size="small" @change='deptSelectionChanged($event)'>
+              <el-select v-model="form.dept" value-key="deptId" placeholder="生产车间" clearable size="small" @change='deptSelectionChanged($event)'>
                 <el-option
                   v-for="item in deptOptions"
                   :key="item.deptId"
                   :label="item.deptName"
-                  :value="item.deptName"
+                  :value="item"
                 />
               </el-select>
             </el-form-item>
@@ -408,7 +408,7 @@ from '@/api/production/report/prodreport'
 
 import { listProdDept } from '@/api/system/dept'
 import { listPart } from '@/api/masterdata/part'
-import { listGroup, getGroupByDeptId } from '@/api/production/shopfloor/group/group'
+import { listGroup } from '@/api/production/shopfloor/group/group'
 import { listOperation } from '@/api/production/shopfloor/operation/operation'
 import { listReason } from '@/api/production/shopfloor/operation/oprejectreason'
 
@@ -658,20 +658,14 @@ export default {
     // 部门选择值发生变化
     deptSelectionChanged (dept) {
       if (dept) {
-        // let query = {
-        //   deptId: dept.deptId
-        // }
-        let deptId = this.deptOptions.find(item => item.deptName === dept).deptId
-        if (deptId) {
-          this.groupOptions = []
-          this.form.group = {}
-          // listGroup(query).then(response => {
-          //   this.groupOptions = response.rows
-          // })
-          getGroupByDeptId(deptId).then(response => {
-            this.groupOptions = response.rows
-          })
+        let query = {
+          deptId: dept.deptId
         }
+        this.groupOptions = []
+        this.form.group = {}
+        listGroup(query).then(response => {
+          this.groupOptions = response.rows
+        })
       } else {
         this.groupOptions = []
         this.form.group = {}
