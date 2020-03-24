@@ -66,6 +66,7 @@
       row-key='id'
       border
       stripe
+      size='mini'
       :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       @selection-change="handleSelectionChange"
     >
