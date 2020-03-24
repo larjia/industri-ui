@@ -170,7 +170,6 @@
             <el-form-item label="产品名称" prop="partProjName">
               <el-select 
                 v-model="form.partProjName" 
-                value-key="id" 
                 filterable 
                 clearable
                 size="small" 
@@ -180,7 +179,7 @@
                   v-for="item in partOptions"
                   :key="item.id"
                   :label="item.projName"
-                  :value="item">
+                  :value="item.projName">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -622,7 +621,8 @@ export default {
     // 产品名称选中值发生变化
     partSelectionChanged (part) {
       if (part) {
-        this.form.partNumber = part.number
+        let info = this.partOptions.find(item => item.projName === part)
+        this.form.partNumber = info.number
       } else {
         this.form.partNumber = ''
       }
@@ -709,12 +709,17 @@ export default {
       this.form = {
         prodDate: new Date(), // 默认当前日期
         shift: '0', // 默认白班
-        partNumber: '', // ERP物料号
-        serialNumber: '', // 批序号
+        // partNumber: '', // ERP物料号
+        // serialNumber: '', // 批序号
         qtyCompleted: 0,
         qtyRejected: 0,
         qtyScrapped: 0,
-        // qtyAccepted: this.qtyAccepted
+        partOptions: [],
+        componentOptions: [],
+        deptOptions: [],
+        groupOptions: [],
+        opOptions: [],
+        reasonOptions: []
       };
       this.resetForm('form')
     },
