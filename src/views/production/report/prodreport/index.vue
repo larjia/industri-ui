@@ -134,7 +134,7 @@
             </el-form-item>
           </el-col>
 
-<el-col :span="16">
+          <el-col :span="16">
             <el-form-item label="工作时间">
               <el-col :span="8" :xs="{span:24, offset:0}">
               <el-time-select
@@ -162,7 +162,7 @@
               />
               </el-col>
             </el-form-item>
-</el-col>
+          </el-col>
         </el-row>
 
         <!-- 表单行-物料号 -->
@@ -429,6 +429,25 @@ export default {
      * 工序    : opOptions
      * 原因    : reasonOptions
      */
+
+    // 完成数>0
+    let validQtyCompleted = (rule, value, cb) => {
+      if (value <= 0) {
+        cb(new Error('完成数不能小于等于0'))
+      } else {
+        cb()
+      }
+    }
+
+    // 不良原因
+    let validRejectReason = (rule, value, cb) => {
+      if (this.showReason && !this.rejectReason) {
+        cb(new Error('不良原因不能为空'))
+      } else {
+        cb()
+      }
+    }
+
     return {
       /**
        * index页面数据
@@ -477,14 +496,42 @@ export default {
       needReason: false,
       // 是否需要显示不良原因选择框
       // showReason: false,
+      // 是否为新增或修改(false: 修改 true: 新增)
+      isNew: false,
+      dialogWidth: 0,
       // 表单参数
       form: {},
       // 表单校验
       rules: {
+        partProjName: [
+          { required: true, message: '产品名称不能为空', trigger: 'blur' }
+        ],
+        componentName: [
+          { required: true, message: '零件名称不能为空', trigger: 'blur' }
+        ],
+        serialNumber: [
+          { required: true, message: '批序号不能为空', trigger: 'blue' }
+        ],
+        dept: [
+          { required: true, message: '车间部门不能为空', trigger: 'blur' }
+        ],
+        group: [
+          { required: true, message: '班组不能为空', trigger: 'blur' }
+        ],
+        op: [
+          { required: true, message: '工序不能为空', trigger: 'blur' }
+        ],
+        qtyCompleted: [
+          { required: true, message: '完成数不能为空', trigger: 'blur' },
+          { validator: validQtyCompleted, trigger: 'blur' }
+        ],
+        operator: [
+          { required: true, message: '操作员姓名不能为空', trigger: 'blur' }
+        ],
+        rejectReason: [
+          { validator: validRejectReason, trigger: 'blur' }
+        ]
       },
-      // 是否为新增或修改(false: 修改 true: 新增)
-      isNew: false,
-      dialogWidth: 0
     }
   },
   created () {
