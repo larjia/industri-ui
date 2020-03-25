@@ -1,9 +1,21 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 // import Home from '../views/Home.vue'
-import Layout from '@/layout'
+
+// 解决Uncaught (in promise) exception: undefined
+// https://blog.csdn.net/weixin_43202608/article/details/98884620
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err)
+}
+
+const originalReplace = VueRouter.prototype.replace;
+VueRouter.prototype.replace = function replace(location) {
+  return originalReplace.call(this, location).catch(err => err)
+}
 
 Vue.use(VueRouter)
+import Layout from '@/layout'
 
 /**
  * Note: 路由配置项
@@ -25,26 +37,13 @@ Vue.use(VueRouter)
 
 // 公共路由
 export const constantRoutes = [
-  // {
-  //   path: '/',
-  //   name: 'Home',
-  //   component: Home
-  // },
-  // {
-  //   path: '/about',
-  //   name: 'About',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  // }
   {
     path: '/redirect',
     component: Layout,
     hidden: true,
     children: [
       {
-        path: '/redirect/:path',
+        path: '/redirect/:path*',
         component: () => import('@/views/redirect')
       }
     ]
@@ -55,12 +54,22 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/404',
+    component: () => import('@/views/error/404'),
+    hidden: true
+  },
+  {
+    path: '/401',
+    component: () => import('@/views/error/401'),
+    hidden: true
+  },
+  {
     path: '/r',
     component: () => import('@/views/r'),
     hidden: true
   },
   {
-    path: '/',
+    path: '',
     component: Layout,
     redirect: 'index',
     children: [
@@ -76,7 +85,7 @@ export const constantRoutes = [
 
 const router = new VueRouter({
   // mode: 'history',
-  base: process.env.BASE_URL,
+  // base: process.env.BASE_URL,
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
