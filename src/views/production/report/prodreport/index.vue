@@ -430,8 +430,9 @@ export default {
      * 原因    : reasonOptions
      */
 
-    // 完成数>0
-    let validQtyCompleted = (rule, value, cb) => {
+    // 完成数       : > 0
+    // 不良数,报废数: 为空或者>0
+    let validLargerThanZero = (rule, value, cb) => {
       if (value <= 0) {
         cb(new Error('完成数不能小于等于0'))
       } else {
@@ -439,14 +440,26 @@ export default {
       }
     }
 
-    // 不良原因
-    let validRejectReason = (rule, value, cb) => {
-      if (this.showReason && !this.rejectReason) {
-        cb(new Error('不良原因不能为空'))
+    let validNoLessThanZero = (rule, value, cb) => {
+      if (value != '') {
+        if (value < 0) {
+          cb(new Error('数量不能小于0'))
+        } else {
+          cb()
+        } 
       } else {
         cb()
       }
     }
+
+    // 不良原因
+    // let validRejectReason = (rule, value, cb) => {
+    //   if (this.showReason && !this.form.rejectReason) {
+    //     cb(new Error('不良原因不能为空'))
+    //   } else {
+    //     cb()
+    //   }
+    // }
 
     return {
       /**
@@ -522,14 +535,23 @@ export default {
           { required: true, message: '工序不能为空', trigger: 'blur' }
         ],
         qtyCompleted: [
-          { required: true, message: '完成数不能为空', trigger: 'blur' },
-          { validator: validQtyCompleted, trigger: 'blur' }
+          { required: true, message: '完成数不能为空', trigger: 'change' },
+          { validator: validLargerThanZero, trigger: 'change' }
         ],
         operator: [
           { required: true, message: '操作员姓名不能为空', trigger: 'blur' }
         ],
+        qtyRejected: [
+          { required: true, message: '数量不能为空', trigger: 'change' },
+          { validator: validNoLessThanZero, trigger: 'change' }
+        ],
+        qtyScrapped: [
+          { required: true, message: '数量不能为空', trigger: 'change' },
+          { validator: validNoLessThanZero, trigger: 'change' }
+        ],
         rejectReason: [
-          { validator: validRejectReason, trigger: 'blur' }
+        //   { validator: validRejectReason, trigger: 'blur' }
+          { validator: this.validateRejectReason, trigger: 'blur' }
         ]
       },
     }
@@ -576,10 +598,12 @@ export default {
     },
     // 是否需要显示并选择原因
     showReason () {
-      if (this.needReason && (this.form.qtyRejected !== 0 || this.form.qtyScrapped !== 0)) {
-        return true
-      }
-      return false
+      // if (this.needReason && (this.form.qtyRejected !== 0 || this.form.qtyScrapped !== 0)) {
+      //   return true
+      // }
+      // this.form.rejectReason = ''
+      // return false
+      return this.calcShowReason()
     }
   },
   methods: {
@@ -915,6 +939,21 @@ export default {
       } else {
         this.dialogWidth = def + 'px'
       }
+    },
+    // 校验
+    validateRejectReason (rule, value, cb) {
+      if (this.showReason && !this.form.rejectReason) {
+        cb(new Error('不良原因不能为空'))
+      }
+      cb()
+    },
+    // 计算是否显示不良原因
+    calcShowReason () {
+      if (this.needReason && (this.form.qtyRejected !== 0 || this.form.qtyScrapped !== 0)) {
+        return true
+      }
+      this.form.rejectReason = ''
+      return false
     }
   }
 }
