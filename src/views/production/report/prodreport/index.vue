@@ -134,9 +134,9 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="16">
-            <el-form-item label="工作时间">
-              <el-col :span="8" :xs="{span:24, offset:0}">
+          <el-col :span="8">
+            <el-form-item label="起始时间" prop="startTime">
+              <!-- <el-col :span="8" :xs="{span:24, offset:0}"> -->
               <el-time-select
                 v-model="form.startTime"
                 :picker-options="{
@@ -147,9 +147,12 @@
                 size="small"
                 placeholder="起始时间"
               />
-              </el-col>
-              
-              <el-col :span="8" :offset="2" :xs="{span:24, offset:0}">
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="8"> 
+              <!-- <el-col :span="8" :offset="2" :xs="{span:24, offset:0}"> -->
+            <el-form-item label="至" prop="endTime">
               <el-time-select
                 v-model="form.endTime"
                 :picker-options="{
@@ -160,7 +163,6 @@
                 size="small"
                 placeholder="结束时间"
               />
-              </el-col>
             </el-form-item>
           </el-col>
         </el-row>
@@ -516,6 +518,15 @@ export default {
       form: {},
       // 表单校验
       rules: {
+        prodDate: [
+          { required: true, message: '生产日期不能为空', trigger: 'blur' }
+        ],
+        startTime: [
+          { required: true, message: '起始时间不能为空', trigger: 'blur' }
+        ],
+        endTime: [
+          { required: true, message: '结束时间不能为空', trigger: 'blur' }
+        ],
         partProjName: [
           { required: true, message: '产品名称不能为空', trigger: 'blur' }
         ],
