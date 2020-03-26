@@ -564,6 +564,9 @@ export default {
           { required: true, message: '数量不能为空', trigger: 'change' },
           { validator: validNoLessThanZero, trigger: 'change' }
         ],
+        qtyAccepted: [
+          { validator: this.validateQtyAccepted, trigger: 'change' }
+        ],
         rejectReason: [
         //   { validator: validRejectReason, trigger: 'blur' }
           { validator: this.validateRejectReason, trigger: 'blur' }
@@ -960,6 +963,13 @@ export default {
     validateRejectReason (rule, value, cb) {
       if (this.showReason && !this.form.rejectReason) {
         cb(new Error('不良原因不能为空'))
+      }
+      cb()
+    },
+    // 校验合格数是否大于等于0
+    validateQtyAccepted (rule, value ,cb) {
+      if (this.qtyAccepted < 0) {
+        cb(new Error('合格数不能小于0'))
       }
       cb()
     },
