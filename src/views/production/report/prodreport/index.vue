@@ -435,8 +435,12 @@ export default {
     // 完成数       : > 0
     // 不良数,报废数: 为空或者>0
     let validLargerThanZero = (rule, value, cb) => {
-      if (value <= 0) {
-        cb(new Error('完成数不能小于等于0'))
+      if (value != '') {
+        if (value <= 0) {
+          cb(new Error('完成数不能小于等于0'))
+        } else {
+          cb()
+        }
       } else {
         cb()
       }
@@ -852,28 +856,29 @@ export default {
         }
       })
     },
-    // 点击确定并继续按钮
+    // 点击确定并继续添加按钮
     submitContinue () {
       this.$refs['form'].validate(valid => {
         if (valid) {
-          this.form.partProjName = this.form.partProjName.projName
-          this.form.dept = this.form.dept.deptName
-          this.form.group = this.form.group.name
-          this.form.op = this.form.op.name
+          // 不再需要,因为下拉框value已经绑定至属性而非对象
+          // this.form.partProjName = this.form.partProjName.projName
+          // this.form.dept = this.form.dept.deptName
+          // this.form.group = this.form.group.name
+          // this.form.op = this.form.op.name
           this.form.qtyAccepted = this.qtyAccepted
           this.form.ppm = this.ppm
           this.form.ftq = this.ftq
-          if (this.showReason) {
-            this.form.rejectReason = this.form.rejectReason.reason
-          }
+          // if (this.showReason) {
+          //   this.form.rejectReason = this.form.rejectReason.reason
+          // }
 
           addReportHist(this.form).then(response => {
             if (response.code === 200) {
               this.msgSuccess('新增成功')
               // this.open = false
-              // this.reset()
-              // this.getReportHistList()
-              this.handleAdd()
+              this.reset()
+              this.getReportHistList()
+              // this.handleAdd()
             } else {
               this.msgError(response.msg)
             }
@@ -881,7 +886,7 @@ export default {
         }
       })
     },
-    // 点击确定按钮
+    // 点击确定按钮 submitForm has been replaced by submitForm function
     submitForm () {
       // console.log(this.form)
       this.$refs['form'].validate(valid => {
