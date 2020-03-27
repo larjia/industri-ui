@@ -664,13 +664,56 @@ export default {
       this.reset()
       const id = row.id || this.ids
       getReportHistById(id).then(response => {
+        this.form = response.data
         this.getPartList()
         this.getComponentList()
-        this.getDeptList()
-        this.form = response.data
-        this.open = true
-        this.title = '修改报工记录'
+        return
+      }).then(() => {
+        listProdDept().then(response => {
+        this.deptOptions = response.data
+        return response.data
+      }).then(res => {
+          let deptId = res.find(item => item.deptName === this.form.dept).deptId
+          let groupQuery = {
+            deptId: deptId
+          }
+          listGroup(groupQuery).then(response => {
+            this.groupOptions = response.rows
+            return response.rows
+          }).then(res => {
+            let groupId = res.find(item => item.name === this.form.group).id
+            let opQuery = {
+              groupId: groupId
+            }
+            listOperation(opQuery).then(response => {
+              this.opOptions = response.rows
+              return response.rows
+            }).then(res => {
+              let info = res.find(item => item.name === this.form.op)
+              if (info && info.needReason === '1') {
+                this.needReason = true
+                let reasonQuery = {
+                  opId: info.id
+                }
+                listReason(reasonQuery).then(response => {
+                  this.reasonOptions = response.rows
+                })
+              } else {
+                // this.needReason = false
+              }
+              this.$forceUpdate()
+            })
+          })
+        })
       })
+
+      if (this.form.rejectReason != '') {
+        this.needReason = true
+      }
+
+      // open and title
+      this.open = true
+      this.title = '修改报工记录'
     },
     // 删除按钮操作
     handleDelete (row) {
@@ -727,6 +770,7 @@ export default {
     getDeptList () {
       listProdDept().then(response => {
         this.deptOptions = response.data
+        return response
       })
     },
     // 部门选择值发生变化
@@ -782,6 +826,7 @@ export default {
         }
         listReason(query).then(response => {
           this.reasonOptions = response.rows
+          this.form.rejectReason = ''
         })
       } else {
         this.needReason = false
@@ -798,6 +843,8 @@ export default {
       this.form = {
         prodDate: new Date(), // 默认当前日期
         shift: '0', // 默认白班
+        startTime: '',
+        endTime: '',
         // partNumber: '', // ERP物料号
         // serialNumber: '', // 批序号
         qtyCompleted: 0,
@@ -820,6 +867,9 @@ export default {
             this.form.qtyAccepted = this.qtyAccepted
             this.form.ppm = this.ppm
             this.form.ftq = this.ftq
+            if (!this.showReason) {
+              this.form.rejectReason = ''
+            }
             // if (this.showReason) {
             //   this.form.rejectReason = this.form.rejectReason.reason
             // }
@@ -835,15 +885,11 @@ export default {
             })
 
           } else {          // 修改
-            this.form.partProjName = this.form.partProjName.projName
-            this.form.dept = this.form.dept.deptName
-            this.form.group = this.form.group.name
-            this.form.op = this.form.op.name
             this.form.qtyAccepted = this.qtyAccepted
             this.form.ppm = this.ppm
             this.form.ftq = this.ftq
-            if (this.form.rejectReason) {
-              this.showReason = true
+            if (!this.showReason && this.form.rejectReason) {
+              this.form.rejectReason = ''
             }
 
             updateReportHist(this.form).then(response => {
@@ -889,58 +935,6 @@ export default {
         }
       })
     },
-    // 点击确定按钮 submitForm has been replaced by submitForm function
-    submitForm () {
-      // console.log(this.form)
-      this.$refs['form'].validate(valid => {
-        if (valid) {
-          if (this.form.id !== undefined) { // 修改
-            console.log(this.form)
-
-            if (this.form.prodDept instanceof Object) {
-              this.form.prodDept = this.form.prodDept.deptName
-            }
-            if (this.form.prodSFGroup instanceof Object) {
-              this.form.prodSFGroup = this.form.prodSFGroup.groupName
-            }
-            if (this.form.prodSFOp instanceof Object) {
-              this.form.prodSFOp = this.form.prodSFOp.operationName
-            }
-            this.form.qtyAccepted = this.qtyAccepted
-            this.form.ppm = this.ppm
-            this.form.ftq = this.ftq
-
-            updateReportHist(this.form).then(response => {
-              if (response.code === 200) {
-                this.msgSuccess('修改成功')
-                this.open = false
-                this.getReportHistList()
-              } else {
-                this.msgError(response.msg)
-              }
-            })
-
-          } else { // 新增
-            this.form.prodDept = this.form.prodDept.deptName
-            this.form.prodSFGroup = this.form.prodSFGroup.groupName
-            this.form.prodSFOp = this.form.prodSFOp.operationName
-            this.form.qtyAccepted = this.qtyAccepted
-            this.form.ppm = this.ppm
-            this.form.ftq = this.ftq
-
-            addReportHist(this.form).then(response => {
-              if (response.code === 200) {
-                this.msgSuccess('新增成功')
-                this.open = false
-                this.getReportHistList()
-              } else {
-                this.msgError(response.msg)
-              }
-            })
-          }
-        }
-      })
-    },
     // 取消按钮
     cancel () {
       this.open = false
@@ -978,7 +972,7 @@ export default {
       if (this.needReason && (this.form.qtyRejected !== 0 || this.form.qtyScrapped !== 0)) {
         return true
       }
-      this.form.rejectReason = ''
+      // this.form.rejectReason = ''
       return false
     }
   }
