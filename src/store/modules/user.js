@@ -37,7 +37,7 @@ const user = {
       const uuid = userInfo.uuid
       return new Promise((resolve, reject) => {
         login(username, password, code, uuid).then(res => {
-          console.log(res)
+          // console.log(res)
           setToken(res.token)
           commit('SET_TOKEN', res.token)
           resolve()
