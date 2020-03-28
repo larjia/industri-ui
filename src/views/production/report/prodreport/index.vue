@@ -134,7 +134,7 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="8">
+          <el-col :span="8" :xs="{span:24, offset:0}">
             <el-form-item label="起始时间" prop="startTime">
               <!-- <el-col :span="8" :xs="{span:24, offset:0}"> -->
               <el-time-select
@@ -150,7 +150,7 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="8"> 
+          <el-col :span="8" :xs="{span:24, offset:0}"> 
               <!-- <el-col :span="8" :offset="2" :xs="{span:24, offset:0}"> -->
             <el-form-item label="至" prop="endTime">
               <el-time-select
@@ -994,8 +994,9 @@ export default {
 }
 
 .app-container ::v-deep .el-dialog__footer {
-  padding-left: 25px;
-  padding-right: 25px;
+  /* padding-left: 25px;
+  padding-right: 25px; */
+  text-align: center;
 }
 
 .el-input-number--small {
